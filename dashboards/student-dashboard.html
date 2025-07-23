@@ -1,0 +1,1488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard - iScore</title>
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/theme.css">
+    <link rel="stylesheet" href="../css/responsive.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .dashboard-container {
+            min-height: 100vh;
+            background: var(--bg-primary);
+        }
+
+        .dashboard-header {
+            background: var(--bg-primary);
+            border-bottom: 1px solid var(--border-color, #e5e7eb);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .profile-section {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+            transition: background 0.2s;
+        }
+
+        .profile-section:hover {
+            background: var(--bg-secondary, #f8fafc);
+        }
+
+        .profile-picture {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--blue-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+
+        .student-name {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        /* Theme toggle styling */
+        .theme-toggle-btn {
+            position: relative;
+            width: 48px;
+            height: 48px;
+            background: transparent;
+            border: 2px solid var(--border-color);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .theme-toggle-btn:hover {
+            background: var(--blue-primary);
+            color: white;
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .theme-icons {
+            position: relative;
+            width: 24px;
+            height: 24px;
+        }
+
+        .theme-icon {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 24px;
+            height: 24px;
+            font-size: 24px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            opacity: 0;
+            visibility: hidden;
+            transform: rotate(180deg) scale(0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }dled in theme.css */
+
+        .notifications-btn {
+            width: 40px;
+            height: 40px;
+            border: 2px solid var(--blue-primary, #3b82f6);
+            border-radius: 0.5rem;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .notifications-btn:hover {
+            background: var(--blue-primary, #3b82f6);
+            color: white;
+        }
+
+        .dashboard-main {
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .position-card {
+            background: var(--blue-gradient);
+            color: white;
+            border-radius: 1rem;
+            padding: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            box-shadow: var(--shadow-lg);
+            cursor: pointer;
+            transition: transform 0.2s;
+            grid-column: 1 / -1;
+        }
+
+        .position-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .position-number {
+            font-size: 4rem;
+            font-weight: 700;
+            line-height: 1;
+        }
+
+        .position-info {
+            flex: 1;
+        }
+
+        .position-info h3 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .position-info p {
+            opacity: 0.9;
+            margin-bottom: 1rem;
+        }
+
+        .position-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .enroll-btn, .go-exam-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .enroll-btn:hover, .go-exam-btn:hover {
+            background: white;
+            color: var(--blue-primary, #3b82f6);
+        }
+
+        .go-exam-btn {
+            background: rgba(34, 197, 94, 0.2);
+            border-color: rgba(34, 197, 94, 0.5);
+        }
+
+        .go-exam-btn:hover {
+            background: var(--success, #22c55e);
+            color: white;
+        }
+
+        .dashboard-card {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color, #e5e7eb);
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: var(--shadow-md);
+            transition: all 0.2s;
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-icon {
+            width: 50px;
+            height: 50px;
+            background: var(--blue-gradient);
+            border-radius: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .card-content {
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+        }
+
+        .card-btn {
+            background: var(--blue-primary, #3b82f6);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .card-btn:hover {
+            background: var(--blue-secondary, #1e40af);
+            transform: translateY(-1px);
+        }
+
+        .performance-controls {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .select-dropdown {
+            padding: 0.5rem;
+            border: 1px solid var(--border-color, #e5e7eb);
+            border-radius: 0.5rem;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+        }
+
+        .chart-placeholder {
+            height: 200px;
+            background: var(--bg-secondary, #f8fafc);
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+
+        .calendar-container {
+            background: var(--bg-secondary, #f8fafc);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .calendar-month {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .expand-calendar {
+            background: none;
+            border: none;
+            color: var(--blue-primary, #3b82f6);
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 0.25rem;
+            margin-top: 1rem;
+        }
+
+        .calendar-day {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 0.25rem;
+            font-size: 0.875rem;
+        }
+
+        .calendar-day.private-day {
+            background: var(--accent-primary, #06b6d4);
+            color: white;
+        }
+
+        .calendar-day.holiday {
+            background: var(--error, #ef4444);
+            color: white;
+        }
+
+        .calendar-day.icup-day {
+            background: var(--blue-primary, #3b82f6);
+            color: white;
+            font-weight: 600;
+        }
+
+        .footer-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--bg-primary);
+            border-top: 1px solid var(--border-color, #e5e7eb);
+            padding: 1rem;
+            display: flex;
+            justify-content: center;
+            gap: 3rem;
+            z-index: 100;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.25rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.75rem;
+            transition: color 0.2s;
+        }
+
+        .nav-item.active,
+        .nav-item:hover {
+            color: var(--blue-primary, #3b82f6);
+        }
+
+        .nav-item i {
+            font-size: 1.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-header {
+                padding: 1rem;
+            }
+
+            .dashboard-main {
+                padding: 1rem;
+                padding-bottom: 6rem;
+            }
+
+            .position-card {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .position-number {
+                font-size: 3rem;
+            }
+
+            .performance-controls {
+                flex-direction: column;
+            }
+
+            .footer-nav {
+                gap: 2rem;
+            }
+        }
+
+        .notification-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            box-shadow: var(--shadow-md);
+            width: 300px;
+            padding: 1rem;
+            display: none;
+            z-index: 100;
+        }
+
+        .notification-item {
+            padding: 0.75rem;
+            border-bottom: 1px solid var(--border-color);
+            transition: background 0.2s;
+        }
+
+        .notification-item:last-child {
+            border-bottom: none;
+        }
+
+        .notification-item:hover {
+            background: var(--bg-secondary);
+        }
+
+        .notification-title {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .notification-message {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+        }
+
+        .notification-time {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+        }
+
+        .mark-as-read-btn {
+            background: none;
+            border: none;
+            color: var(--blue-primary);
+            cursor: pointer;
+            font-size: 0.75rem;
+        }
+
+        .notification-dropdown.show {
+            display: block;
+        }
+
+        /* Tutors section styles */
+        .tutors-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .tutor-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-color);
+            transition: background 0.2s;
+        }
+
+        .tutor-item:last-child {
+            border-bottom: none;
+        }
+
+        .tutor-item:hover {
+            background: var(--bg-secondary);
+        }
+
+        .tutor-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .tutor-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .avatar-placeholder {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: var(--blue-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+
+        .tutor-info {
+            flex: 1;
+        }
+
+        .tutor-name {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .tutor-details {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            margin-bottom: 0.25rem;
+        }
+
+        .tutor-email {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+        }
+
+        .tutor-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .view-profile-btn {
+            background: none;
+            border: 1px solid var(--primary-color);
+            color: var(--primary-color);
+            border-radius: 6px;
+            padding: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .view-profile-btn:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .refresh-btn {
+            background: none;
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            border-radius: 6px;
+            padding: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .refresh-btn:hover {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+        }
+
+        .loading-content, .empty-state, .error-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        .empty-state i, .error-state i {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .retry-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            margin-top: 1rem;
+            transition: background 0.2s;
+        }
+
+        .retry-btn:hover {
+            background: var(--primary-color-dark);
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: var(--error-color, #ef4444);
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 600;
+            z-index: 10;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <header class="dashboard-header">
+            <div class="header-left">
+                <div class="profile-section" onclick="window.location.href='../pages/profile.html'">
+                    <div class="profile-picture" id="profilePicture">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <span class="student-name" id="studentName">Student</span>
+                </div>
+            </div>
+            <div class="header-right">
+                <button id="theme-toggle" class="theme-toggle-btn" aria-label="Toggle Theme">
+                    <div class="theme-icons">
+                        <span class="theme-icon light material-symbols-outlined">light_mode</span>
+                        <span class="theme-icon dark material-symbols-outlined">dark_mode</span>
+                    </div>
+                </button>
+                <div style="position: relative;">
+                    <button class="notifications-btn" onclick="window.location.href='../dashboards-sections/student/notifications.html'">
+                        <i class="fas fa-bell"></i>
+                    </button>
+                    <span id="notificationBadge" class="notification-badge" style="display: none;">0</span>
+                </div>
+                <button class="logout-btn" onclick="handleLogout()">
+                    <i data-lucide="log-out"></i>
+                    <span>Logout</span>
+                </button>
+            </div>
+        </header>
+
+        <main class="dashboard-main">
+            <!-- iCup Position Card -->
+            <div class="position-card" onclick="handlePositionClick()">
+                <div class="position-number" id="positionNumber">#∞</div>
+                <div class="position-info">
+                    <h3>iCup Position</h3>
+                    <div class="position-actions">
+                        <div>
+                            <p id="nextExamInfo">Next iCup exam in: Loading...</p>
+                        </div>
+                        <button class="enroll-btn" id="enrollBtn" onclick="handleEnrollClick(event)" style="display: none;">
+                            <i class="fas fa-plus"></i>
+                            Enroll now!
+                        </button>
+                        <button class="go-exam-btn" id="goExamBtn" onclick="handleGoExamClick(event)" style="display: none;">
+                            <i class="fas fa-play"></i>
+                            Go to Exam
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dashboard-grid">
+                <!-- My Tutors Section -->
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <h3 class="card-title"><i class="fas fa-chalkboard-teacher"></i> My Tutors</h3>
+                        <button class="refresh-btn" onclick="loadMyTutors()">
+                            <i class="fas fa-sync-alt"></i>
+                        </button>
+                    </div>
+                    <div class="card-content">
+                        <div id="myTutorsList" class="tutors-list">
+                            <div class="loading-content">
+                                <i class="fas fa-spinner fa-spin"></i>
+                                Loading tutors...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- My Parents Section -->
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <h3 class="card-title"><i class="fas fa-users"></i> My Parents</h3>
+                        <button class="refresh-btn" onclick="loadMyParents()">
+                            <i class="fas fa-sync-alt"></i>
+                        </button>
+                    </div>
+                    <div class="card-content">
+                        <div id="myParentsList" class="tutors-list">
+                            <div class="loading-content">
+                                <i class="fas fa-spinner fa-spin"></i>
+                                Loading parents...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Performance Analysis Card -->
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <div class="card-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <h3 class="card-title">Performance Analysis</h3>
+                    </div>
+                    <div class="performance-controls">
+                        <select class="select-dropdown" id="comparisonSelect" multiple>
+                            <option value="none" selected>None</option>
+                            <!-- Student names will be populated here -->
+                        </select>
+                    </div>
+                    <div class="chart-placeholder">
+                        Performance Chart (To be implemented)
+                    </div>
+                    <button class="card-btn" onclick="savePDF()">Save as PDF</button>
+                </div>
+
+                <!-- Upcoming Exams Card -->
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <div class="card-icon">
+                            <i class="fas fa-clipboard-list"></i>
+                        </div>
+                        <h3 class="card-title">Upcoming Exams</h3>
+                    </div>
+                    <div class="card-content" id="upcomingExams">
+                        <p>Loading upcoming exam information...</p>
+                    </div>
+                </div>
+
+                <!-- Monthly Calendar Card -->
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <div class="card-icon">
+                            <i class="fas fa-calendar"></i>
+                        </div>
+                        <h3 class="card-title">Monthly Calendar</h3>
+                    </div>
+                    <div class="calendar-container">
+                        <div class="calendar-month">
+                            <span id="currentMonth">December 2024</span>
+                            <button class="expand-calendar" onclick="expandCalendar()">
+                                <i class="fas fa-expand"></i>
+                            </button>
+                        </div>
+                        <div class="calendar-grid" id="calendarGrid">
+                            <!-- Calendar days will be generated here -->
+                        </div>
+                        <div style="margin-top: 1rem; font-size: 0.75rem; color: var(--text-secondary);">
+                            <div style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem;">
+                                <span><span style="display: inline-block; width: 12px; height: 12px; background: var(--accent-primary); border-radius: 2px; margin-right: 4px;"></span>Private Days</span>
+                                <span><span style="display: inline-block; width: 12px; height: 12px; background: var(--error); border-radius: 2px; margin-right: 4px;"></span>Holidays</span>
+                                <span><span style="display: inline-block; width: 12px; height: 12px; background: var(--blue-primary); border-radius: 2px; margin-right: 4px;"></span>iCup Day</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../js/supabase-config.js"></script>
+    <script src="../js/backend-init.js"></script>
+    <script src="../js/api/user.js"></script>
+    <script src="../js/api/exam.js"></script>
+    <script src="../js/api/proctor.js"></script>
+    <script src="../js/api/evaluation.js"></script>
+    <script src="../js/api/payment.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/dashboard.js"></script>
+    <script src="../js/theme.js"></script>
+    <script>
+        // Load user profile and update UI
+        async function loadUserProfile() {
+            try {
+                // Wait for userAPI to be ready with better error handling
+                let attempts = 0;
+                while ((!window.userAPI || typeof window.userAPI.getCurrentUser !== 'function') && attempts < 100) {
+                    await new Promise(resolve => setTimeout(resolve, 100));
+                    attempts++;
+                }
+
+                if (!window.userAPI || typeof window.userAPI.getCurrentUser !== 'function') {
+                    console.warn('UserAPI not available after waiting');
+                    return;
+                }
+
+                const currentUser = await window.userAPI.getCurrentUser();
+                if (currentUser && currentUser.profile) {
+                    const profile = currentUser.profile;
+
+                    // Update student name
+                    const studentNameEl = document.getElementById('studentName');
+                    if (studentNameEl) {
+                        studentNameEl.textContent = profile.full_name || profile.username || 'Student';
+                    }
+
+                    // Update profile picture - using correct element ID
+                    const profilePictureEl = document.getElementById('profilePicture');
+                    if (profilePictureEl) {
+                        if (profile.profile_picture) {
+                            profilePictureEl.innerHTML = `<img src="${profile.profile_picture}" alt="Profile" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`;
+                        } else {
+                            // Show initials if no profile picture
+                            const initials = profile.full_name ? profile.full_name.charAt(0).toUpperCase() : 'S';
+                            profilePictureEl.innerHTML = initials;
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading user profile:', error);
+                console.error('Error details:', {
+                    message: error.message,
+                    stack: error.stack,
+                    userAPIAvailable: !!window.userAPI,
+                    getCurrentUserAvailable: window.userAPI ? typeof window.userAPI.getCurrentUser : 'userAPI not available'
+                });
+            }
+        }
+
+        // Load profile when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load profile immediately and also set up retry
+            loadUserProfile();
+            setTimeout(loadUserProfile, 2000);
+        });
+    </script>
+    <script>
+        let currentUser = null;
+
+        // Handle logout
+        function handleLogout() {
+            if (confirm('Are you sure you want to logout?')) {
+                if (window.authManager) {
+                    window.authManager.logout();
+                } else {
+                    // Fallback method
+                    localStorage.clear();
+                    window.location.href = '../auth/login.html';
+                }
+            }
+        }
+
+        // Alternative logout function name for compatibility
+        function logout() {
+            handleLogout();
+        }
+
+        // Load notification count
+        async function loadNotificationCount() {
+            try {
+                if (!currentUser) return;
+
+                const { data: visibleNotifications, error } = await window.supabaseClient
+                    .from('notifications')
+                    .select('id')
+                    .eq('user_id', currentUser.user.id)
+                    .eq('hidden', false);
+
+                if (!error && visibleNotifications) {
+                    const count = visibleNotifications.length;
+                    updateNotificationBadge(count);
+                    localStorage.setItem('notificationCount', count.toString());
+                }
+            } catch (error) {
+                console.error('Error loading notification count:', error);
+            }
+        }
+
+        // Update notification badge
+        function updateNotificationBadge(count = null) {
+            const badge = document.getElementById('notificationBadge');
+            if (!badge) return;
+
+            const finalCount = count !== null ? count : parseInt(localStorage.getItem('notificationCount') || '0');
+            
+            if (finalCount > 0) {
+                badge.textContent = finalCount;
+                badge.style.display = 'flex';
+            } else {
+                badge.style.display = 'none';
+            }
+        }
+
+        // Listen for notification removal events
+        window.addEventListener('notificationRemoved', function(event) {
+            updateNotificationBadge(event.detail.newCount);
+        });
+
+        // Listen for storage events (cross-tab sync)
+        window.addEventListener('storage', function(event) {
+            if (event.key === 'notificationCount') {
+                updateNotificationBadge(parseInt(event.newValue || '0'));
+            }
+        });
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Check authentication using userAPI
+            const userData = await window.userAPI.getCurrentUser();
+            if (!userData || !userData.profile || userData.profile.role !== 'student') {
+                window.location.href = '../auth/login.html';
+                return;
+            }
+
+            currentUser = userData;
+            console.log('Current user loaded:', userData.profile.full_name);
+
+            // Update user information
+            document.getElementById('studentName').textContent = userData.profile.full_name || 'Student';
+
+            // Set profile picture initial
+            const profilePictureEl = document.getElementById('profilePicture');
+            if (profilePictureEl && userData.profile.full_name) {
+                profilePictureEl.textContent = userData.profile.full_name.charAt(0).toUpperCase();
+            }
+
+            // Initialize dashboard components
+            await initializeDashboard();
+            generateCalendar();
+            updateNextExamCountdown();
+            
+            // Load notification count
+            await loadNotificationCount();
+            updateNotificationBadge();
+        });
+
+        async function initializeDashboard() {
+            try {
+                // Load iCup position
+                await loadiCupPosition();
+
+                // Load upcoming exams
+                await loadUpcomingExams();
+
+                // Load comparison students for performance analysis
+                await loadComparisonStudents();
+
+                // Load additional data
+                await loadMyTutors();
+                await loadMyParents();
+                await loadNotifications();
+            } catch (error) {
+                console.error('Error loading student profile:', error);
+                alert('Failed to load profile. Please refresh the page.');
+            }
+        }
+
+        // Load my tutors
+        async function loadMyTutors() {
+            try {
+                const tutorsList = document.getElementById('myTutorsList');
+
+                if (!tutorsList) {
+                    console.error('myTutorsList element not found');
+                    return;
+                }
+
+                tutorsList.innerHTML = `
+                    <div class="loading-content">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        Loading tutors...
+                    </div>
+                `;
+
+                // Ensure we have current user
+                if (!currentUser || !currentUser.user) {
+                    console.error('Current user not available');
+                    tutorsList.innerHTML = `
+                        <div class="error-state">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <p>User not found</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                // Get student's tutors list using correct user ID
+                const userId = currentUser.user.id || currentUser.id;
+                const { data: studentInfo, error: studentError } = await window.supabaseClient
+                    .from('student_additional_info')
+                    .select('tutors')
+                    .eq('user_id', userId)
+                    .single();
+
+                if (studentError && studentError.code !== 'PGRST116') {
+                    throw studentError;
+                }
+
+                const tutorIds = studentInfo?.tutors || [];
+
+                if (tutorIds.length === 0) {
+                    tutorsList.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-chalkboard-teacher"></i>
+                            <p>No tutors connected yet</p>
+                            <small>Connect with tutors to see them here</small>
+                        </div>
+                    `;
+                    return;
+                }
+
+                // Get tutor details
+                const { data: tutors, error: tutorsError } = await window.supabaseClient
+                    .from('user_information')
+                    .select('user_id, full_name, email, profile_picture')
+                    .in('user_id', tutorIds);
+
+                if (tutorsError) throw tutorsError;
+
+                // Get tutor additional info
+                const { data: tutorAdditionalInfo } = await window.supabaseClient
+                    .from('tutor_additional_info')
+                    .select('user_id, institution, subject, batch')
+                    .in('user_id', tutorIds);
+
+                // Merge tutor info
+                const tutorsWithInfo = tutors.map(tutor => {
+                    const additionalInfo = tutorAdditionalInfo?.find(info => info.user_id === tutor.user_id);
+                    return { ...tutor, ...additionalInfo };
+                });
+
+                // Display tutors
+                const tutorsHTML = tutorsWithInfo.map(tutor => `
+                    <div class="tutor-item">
+                        <div class="tutor-avatar">
+                            ${tutor.profile_picture 
+                                ? `<img src="${tutor.profile_picture}" alt="${tutor.full_name}">` 
+                                : `<div class="avatar-placeholder">${getInitials(tutor.full_name)}</div>`
+                            }
+                        </div>
+                        <div class="tutor-info">
+                            <div class="tutor-name">${tutor.full_name}</div>
+                            <div class="tutor-details">
+                                ${tutor.institution ? `${tutor.institution}` : ''}
+                                ${tutor.subject ? ` • ${tutor.subject}` : ''}
+                                ${tutor.batch ? ` • ${tutor.batch}` : ''}
+                            </div>
+                            <div class="tutor-email">${tutor.email}</div>
+                        </div>
+                        <div class="tutor-actions">
+                            <button class="view-profile-btn" onclick="viewTutorProfile('${tutor.user_id}')" title="View profile">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+
+                tutorsList.innerHTML = tutorsHTML;
+
+            } catch (error) {
+                console.error('Error loading tutors:', error);
+                document.getElementById('myTutorsList').innerHTML = `
+                    <div class="error-state">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <p>Failed to load tutors</p>
+                        <button onclick="loadMyTutors()" class="retry-btn">Try Again</button>
+                    </div>
+                `;
+            }
+        }
+
+        // Load my parents
+        async function loadMyParents() {
+            try {
+                const parentsList = document.getElementById('myParentsList');
+
+                if (!parentsList) {
+                    console.error('myParentsList element not found');
+                    return;
+                }
+
+                parentsList.innerHTML = `
+                    <div class="loading-content">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        Loading parents...
+                    </div>
+                `;
+
+                // Ensure we have current user
+                if (!currentUser || !currentUser.user) {
+                    console.error('Current user not available');
+                    parentsList.innerHTML = `
+                        <div class="error-state">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <p>User not found</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                // Get student's parents list using correct user ID
+                const userId = currentUser.user.id || currentUser.id;
+                const { data: studentInfo, error: studentError } = await window.supabaseClient
+                    .from('student_additional_info')
+                    .select('parents')
+                    .eq('user_id', userId)
+                    .single();
+
+                if (studentError && studentError.code !== 'PGRST116') {
+                    throw studentError;
+                }
+
+                const parentIds = studentInfo?.parents || [];
+
+                if (parentIds.length === 0) {
+                    parentsList.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-users"></i>
+                            <p>No parents connected yet</p>
+                            <small>Parents will appear here when they add you</small>
+                        </div>
+                    `;
+                    return;
+                }
+
+                // Get parent details
+                const { data: parents, error: parentsError } = await window.supabaseClient
+                    .from('user_information')
+                    .select('user_id, full_name, email, profile_picture')
+                    .in('user_id', parentIds);
+
+                if (parentsError) throw parentsError;
+
+                // Display parents
+                const parentsHTML = parents.map(parent => `
+                    <div class="tutor-item">
+                        <div class="tutor-avatar">
+                            ${parent.profile_picture 
+                                ? `<img src="${parent.profile_picture}" alt="${parent.full_name}">` 
+                                : `<div class="avatar-placeholder">${getInitials(parent.full_name)}</div>`
+                            }
+                        </div>
+                        <div class="tutor-info">
+                            <div class="tutor-name">${parent.full_name}</div>
+                            <div class="tutor-email">${parent.email}</div>
+                        </div>
+                        <div class="tutor-actions">
+                            <button class="view-profile-btn" onclick="viewParentProfile('${parent.user_id}')" title="View profile">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+
+                parentsList.innerHTML = parentsHTML;
+
+            } catch (error) {
+                console.error('Error loading parents:', error);
+                document.getElementById('myParentsList').innerHTML = `
+                    <div class="error-state">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <p>Failed to load parents</p>
+                        <button onclick="loadMyParents()" class="retry-btn">Try Again</button>
+                    </div>
+                `;
+            }
+        }
+
+        // View parent profile
+        function viewParentProfile(parentId) {
+            console.log('View parent profile:', parentId);
+            alert('Parent profile viewing will be implemented soon!');
+        }
+
+        // View tutor profile
+        function viewTutorProfile(tutorId) {
+            // This could redirect to a tutor profile page or open a modal
+            console.log('View tutor profile:', tutorId);
+            // For now, just show an alert
+            alert('Tutor profile viewing will be implemented soon!');
+        }
+
+        // Get initials from name
+        function getInitials(name) {
+            if (!name) return 'U';
+            return name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
+        }
+
+        async function loadiCupPosition() {
+            try {
+                // This would typically fetch from your database
+                // For now, showing placeholder
+                const positionElement = document.getElementById('positionNumber');
+                positionElement.textContent = '#∞'; // Default for never attended
+
+                // Check if student is enrolled in current iCup
+                await checkEnrollmentStatusForPosition();
+            } catch (error) {
+                console.error('Error loading iCup position:', error);
+            }
+        }
+
+        async function checkEnrollmentStatusForPosition() {
+            try {
+                if (!currentUser) return;
+
+                // Get current exam
+                const examResult = await window.examAPI.getCurrentExam();
+                if (!examResult.success || !examResult.data) {
+                    // No current exam, show enroll button
+                    document.getElementById('enrollBtn').style.display = 'flex';
+                    document.getElementById('goExamBtn').style.display = 'none';
+                    return;
+                }
+
+                const isEnrolled = await window.examAPI.isStudentEnrolledInLatestExam(currentUser.user.id);
+
+                const enrollBtn = document.getElementById('enrollBtn');
+                const goExamBtn = document.getElementById('goExamBtn');
+
+                if (isEnrolled) {
+                    enrollBtn.style.display = 'none';
+                    goExamBtn.style.display = 'flex';
+                } else {
+                    enrollBtn.style.display = 'flex';
+                    goExamBtn.style.display = 'none';
+                }
+            } catch (error) {
+                console.error('Error checking enrollment status:', error);
+                // Default to showing enroll button
+                document.getElementById('enrollBtn').style.display = 'flex';
+                document.getElementById('goExamBtn').style.display = 'none';
+            }
+        }
+
+        async function loadUpcomingExams() {
+            try {
+                const upcomingExamsElement = document.getElementById('upcomingExams');
+                upcomingExamsElement.innerHTML = `
+                    <div style="margin-bottom: 1rem;">
+                        <strong>Next iCup Exam</strong>
+                        <div style="margin-top: 0.5rem; font-size: 0.875rem;">
+                            <div>Date: Next Friday</div>
+                            <div>Time: 10:00 AM - 1:00 PM</div>
+                            <div>Subjects: All Core Subjects</div>
+                        </div>
+                    </div>
+                `;
+            } catch (error) {
+                console.error('Error loading upcoming exams:', error);
+                document.getElementById('upcomingExams').innerHTML = '<p>Error loading exam information</p>';
+            }
+        }
+
+        async function loadComparisonStudents() {
+            try {
+                const select = document.getElementById('comparisonSelect');
+                // This would typically fetch other students for comparison
+                // For now, adding placeholder options
+                select.innerHTML = `
+                    <option value="none" selected>None</option>
+                    <option value="student1">John Doe</option>
+                    <option value="student2">Jane Smith</option>
+                    <option value="student3">Mike Johnson</option>
+                `;
+            } catch (error) {
+                console.error('Error loading comparison students:', error);
+            }
+        }
+
+        function generateCalendar() {
+            const calendarGrid = document.getElementById('calendarGrid');
+            const currentDate = new Date();
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+
+            // Update month display
+            document.getElementById('currentMonth').textContent = 
+                currentDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+
+            // Clear previous calendar
+            calendarGrid.innerHTML = '';
+
+            // Add day headers
+            const dayHeaders = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            dayHeaders.forEach(day => {
+                const dayHeader = document.createElement('div');
+                dayHeader.style.fontWeight = '600';
+                dayHeader.style.color = 'var(--text-secondary)';
+                dayHeader.textContent = day;
+                calendarGrid.appendChild(dayHeader);
+            });
+
+            // Get first day of month and number of days
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+            // Add empty cells for days before month starts
+            for (let i = 0; i < firstDay; i++) {
+                const emptyDay = document.createElement('div');
+                emptyDay.className = 'calendar-day';
+                calendarGrid.appendChild(emptyDay);
+            }
+
+            // Add days of the month
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dayElement = document.createElement('div');
+                dayElement.className = 'calendar-day';
+                dayElement.textContent = day;
+
+                const currentDateObj = new Date(year, month, day);
+                const dayOfWeek = currentDateObj.getDay();
+
+                // Mark Fridays as iCup days
+                if (dayOfWeek === 5) {
+                    dayElement.classList.add('icup-day');
+                }
+
+                // Add private days (this would be based on tutor settings)
+                // For demo, marking some days as private
+                if (dayOfWeek === 1 || dayOfWeek === 3 || dayOfWeek === 6) {
+                    dayElement.classList.add('private-day');
+                }
+
+                calendarGrid.appendChild(dayElement);
+            }
+        }
+
+        function updateNextExamCountdown() {
+            // Calculate next Friday
+            const now = new Date();
+            const nextFriday = new Date();
+            const daysUntilFriday = (5 - now.getDay() + 7) % 7;
+            if (daysUntilFriday === 0 && now.getHours() >= 10) {
+                nextFriday.setDate(now.getDate() + 7);
+            } else {
+                nextFriday.setDate(now.getDate() + daysUntilFriday);
+            }
+            nextFriday.setHours(10, 0, 0, 0);
+
+            function updateCountdown() {
+                const timeDiff = nextFriday.getTime() - new Date().getTime();
+
+                if (timeDiff > 0) {
+                    const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+                    const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+
+                    document.getElementById('nextExamInfo').textContent = 
+                        `Next iCup exam in: ${days}d ${hours}h ${minutes}m`;
+                } else {
+                    document.getElementById('nextExamInfo').textContent = 'iCup exam is live!';
+                }
+            }
+
+            updateCountdown();
+            setInterval(updateCountdown, 60000); // Update every minute
+        }
+
+        function handlePositionClick() {
+            window.location.href = '../dashboards/leaderboard.html';
+        }
+
+        function handleEnrollClick(event) {
+            event.stopPropagation();
+            window.location.href = '../pages/icup-landing-student.html';
+        }
+
+        function handleGoExamClick(event) {
+            event.stopPropagation();
+            window.location.href = '../dashboards-sections/student/exam-participation.html';
+        }
+
+        function expandCalendar() {
+            alert('Yearly calendar view - To be implemented');
+        }
+
+        function savePDF() {
+            alert('Save performance chart as PDF - To be implemented');
+        }
+
+        // Load notifications function
+        async function loadNotifications() {
+            try {
+                // This would load student notifications
+                console.log('Loading notifications...');
+            } catch (error) {
+                console.error('Error loading notifications:', error);
+            }
+        }
+
+        // Load student profile data
+        async function loadStudentProfile() {
+            try {
+                const currentUserData = await window.userAPI.getCurrentUser();
+
+                if (!currentUserData || !currentUserData.profile) {
+                    throw new Error('No user data found');
+                }
+
+                const profile = currentUserData.profile;
+                currentUser = profile;
+
+                // Update profile information in UI
+                document.getElementById('studentName').textContent = profile.full_name || 'Student';
+                document.getElementById('studentEmail').textContent = profile.email || '';
+                document.getElementById('studentPhone').textContent = profile.phone || 'Not provided';
+                document.getElementById('studentDistrict').textContent = profile.district || 'Not provided';
+                document.getElementById('studentCity').textContent = profile.city || 'Not provided';
+
+                // Load profile picture
+                if (profile.profile_picture) {
+                    document.getElementById('profilePicture').src = profile.profile_picture;
+                }
+
+                // Load connected tutors
+                await loadConnectedTutors();
+
+                console.log('Student profile loaded successfully');
+            } catch (error) {
+                console.error('Error loading student profile:', error);
+                alert('Failed to load profile data');
+            }
+        }
+
+        // Load connected tutors
+        async function loadConnectedTutors() {
+            try {
+                if (!currentUser) return;
+
+                console.log('Loading connected tutors for student:', currentUser.user_id);
+                const tutors = await window.userAPI.getConnectedTutors(currentUser.user_id);
+                console.log('Connected tutors:', tutors);
+
+                const tutorsList = document.getElementById('connectedTutorsList');
+                if (!tutorsList) return;
+
+                if (tutors.length === 0) {
+                    tutorsList.innerHTML = '<p class="no-data">No connected tutors found</p>';
+                    return;
+                }
+
+                tutorsList.innerHTML = tutors.map(tutor => `
+                    <div class="tutor-card">
+                        <div class="tutor-info">
+                            <img src="${tutor.profile_picture || '/assets/images/default-avatar.png'}" 
+                                 alt="${tutor.full_name}" class="tutor-avatar">
+                            <div class="tutor-details">
+                                <h4>${tutor.full_name}</h4>
+                                <p>${tutor.email}</p>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading connected tutors:', error);
+                const tutorsList = document.getElementById('connectedTutorsList');
+                if (tutorsList) {
+                    tutorsList.innerHTML = '<p class="error">Failed to load tutors</p>';
+                }
+            }
+        }
+    </script>
+</body>
+</html>

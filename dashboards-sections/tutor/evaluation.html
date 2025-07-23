@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evaluation Management</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .evaluation-section {
+            padding: 2rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: white;
+        }
+
+        .evaluation-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .evaluation-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            color: white;
+        }
+
+        .evaluation-content {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 2rem;
+            color: #333;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .status-card {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border-left: 4px solid #667eea;
+        }
+
+        .evaluation-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+        }
+
+        .evaluation-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .assignments-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .assignment-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 2px solid rgba(102, 126, 234, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .assignment-card:hover {
+            border-color: #667eea;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.2);
+        }
+
+        .loading-state {
+            text-align: center;
+            padding: 3rem;
+            color: #666;
+        }
+
+        .loading-spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="evaluation-section">
+        <div class="evaluation-header">
+            <h1><i class="fas fa-clipboard-check"></i> Evaluation Management</h1>
+            <p>Manage and evaluate student answer sets</p>
+        </div>
+
+        <div class="evaluation-content">
+            <div id="loadingState" class="loading-state">
+                <div class="loading-spinner"></div>
+                <p>Loading evaluation assignments...</p>
+            </div>
+
+            <div id="evaluationStatus" style="display: none;">
+                <div class="status-card">
+                    <h3><i class="fas fa-info-circle"></i> Evaluation Status</h3>
+                    <p id="statusMessage">Checking your evaluation assignments...</p>
+                </div>
+
+                <div id="assignmentsSection" style="display: none;">
+                    <h3>Your Evaluation Assignments</h3>
+                    <div id="assignmentsGrid" class="assignments-grid">
+                        <!-- Assignments will be loaded here -->
+                    </div>
+                </div>
+
+                <div style="text-align: center; margin-top: 2rem;">
+                    <button id="goToEvaluationBtn" class="evaluation-btn" onclick="goToEvaluationPage()">
+                        <i class="fas fa-arrow-right"></i>
+                        Go to Evaluation Page
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Ensure this script is treated as a module and only runs once
+        (function() {
+            if (window.tutorEvaluationInitialized) {
+                console.warn('Tutor evaluation script already initialized. Skipping.');
+                return;
+            }
+            window.tutorEvaluationInitialized = true;
+
+            let evalCurrentUser = null;
+            let evalCurrentExam = null;
+
+        // Initialize evaluation section
+        async function initializeTutorEvaluation() {
+            try {
+                console.log('🚀 Initializing tutor evaluation...');
+
+                // Wait for backend to be ready
+                if (typeof window.waitForBackend === 'function') {
+                    await window.waitForBackend();
+                }
+
+                // Get current user
+                const { data: { session }, error } = await window.supabaseClient.auth.getSession();
+                if (!session || !session.user) {
+                    showError('Please log in to access evaluation features.');
+                    return;
+                }
+
+                // Get user profile
+                if (window.userAPI && typeof window.userAPI.getCurrentUser === 'function') {
+                    const userResult = await window.userAPI.getCurrentUser();
+                    if (!userResult || userResult.profile.role !== 'tutor') {
+                        showError('Access denied. Only tutors can access evaluation features.');
+                        return;
+                    }
+                    evalCurrentUser = userResult;
+                } else {
+                    showError('User API not available. Please refresh the page.');
+                    return;
+                }
+
+                // Get current exam
+                if (window.examAPI && typeof window.examAPI.getCurrentExam === 'function') {
+                    const examResult = await window.examAPI.getCurrentExam();
+                    if (!examResult.success || !examResult.data) {
+                        showError('No current exam available for evaluation.');
+                        return;
+                    }
+                    evalCurrentExam = examResult.data;
+                } else {
+                    showError('Exam API not available. Please refresh the page.');
+                    return;
+                }
+
+                // Load evaluation data
+                await loadEvaluationData();
+
+                console.log('✅ Tutor evaluation initialized successfully');
+
+            } catch (error) {
+                console.error('❌ Error initializing tutor evaluation:', error);
+                showError('Failed to initialize evaluation section. Please refresh the page.');
+            }
+        }
+
+        async function loadEvaluationData() {
+            try {
+                const userId = evalCurrentUser.user.id || evalCurrentUser.user.user_id;
+
+                // Check for evaluation assignments
+                const { data: assignments, error } = await window.supabaseClient
+                    .from('evaluator_allocation')
+                    .select('*')
+                    .eq('evaluator_id', userId)
+                    .eq('exam_id', evalCurrentExam.exam_id);
+
+                if (error) throw error;
+
+                document.getElementById('loadingState').style.display = 'none';
+                document.getElementById('evaluationStatus').style.display = 'block';
+
+                if (!assignments || assignments.length === 0) {
+                    document.getElementById('statusMessage').textContent = 
+                        'You have no evaluation assignments for the current exam.';
+                    document.getElementById('goToEvaluationBtn').style.display = 'none';
+                } else {
+                    document.getElementById('statusMessage').textContent = 
+                        `You have ${assignments.length} evaluation assignment(s) for ${evalCurrentExam.title}.`;
+
+                    // Show assignments
+                    displayAssignments(assignments);
+                    document.getElementById('assignmentsSection').style.display = 'block';
+                }
+
+            } catch (error) {
+                console.error('Error loading evaluation data:', error);
+                showError('Failed to load evaluation assignments.');
+            }
+        }
+
+        function displayAssignments(assignments) {
+            const grid = document.getElementById('assignmentsGrid');
+            grid.innerHTML = assignments.map(assignment => `
+                <div class="assignment-card">
+                    <h4><i class="fas fa-file-alt"></i> Assignment ${assignment.allocation_id}</h4>
+                    <p><strong>Answer Sets:</strong> ${assignment.assigned_answer_sets?.length || 0}</p>
+                    <p><strong>Status:</strong> ${assignment.status || 'Pending'}</p>
+                    <p style="color: #666; font-size: 0.9rem;">
+                        Assigned: ${new Date(assignment.created_at).toLocaleDateString()}
+                    </p>
+                </div>
+            `).join('');
+        }
+
+        function showError(message) {
+            document.getElementById('loadingState').style.display = 'none';
+            document.getElementById('evaluationStatus').style.display = 'block';
+            document.getElementById('statusMessage').innerHTML = `
+                <i class="fas fa-exclamation-triangle" style="color: #dc3545;"></i> 
+                ${message}
+            `;
+            document.getElementById('goToEvaluationBtn').style.display = 'none';
+        }
+
+        // Make initializeTutorEvaluation globally available
+        window.initializeTutorEvaluation = initializeTutorEvaluation;
+        
+        // Auto-initialize if this page is loaded directly
+        document.addEventListener('DOMContentLoaded', initializeTutorEvaluation);
+
+        })(); // End of IIFE
+    </script>
+
+    <script>
+        // Global navigation function for the evaluation button
+        function goToEvaluationPage() {
+            // Use postMessage to communicate with parent window
+            if (window.parent && window.parent !== window) {
+                window.parent.postMessage({
+                    type: 'navigate',
+                    url: '../../pages/answer-evaluation.html'
+                }, '*');
+            } else {
+                // Direct navigation if not in iframe
+                window.location.href = '../../pages/answer-evaluation.html';
+            }
+        }
+    </script>
+</body>
+</html>
