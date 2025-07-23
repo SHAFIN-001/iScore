@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>iScore - Education Platform</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/theme.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Material Icons for theme toggle -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=dark_mode,light_mode" />
+    <!-- Lucide Icons -->
+    <link href="https://unpkg.com/lucide@latest/dist/umd/lucide.js" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-container">
+            <!-- Logo Section -->
+            <div class="logo-section">
+                <div class="logo-icon">I</div>
+                <span class="logo-text">iScore</span>
+            </div>
+
+            <!-- Header Actions -->
+            <div class="header-actions">
+                <a href="auth/login.html" class="login-btn">
+                    <i data-lucide="log-in"></i>
+                    <span>Login</span>
+                </a>
+                <button class="theme-toggle-btn" id="theme-toggle" aria-label="Toggle Theme">
+                    <div class="theme-icons">
+                        <span class="theme-icon light material-symbols-outlined">light_mode</span>
+                        <span class="theme-icon dark material-symbols-outlined">dark_mode</span>
+                    </div>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="content-container">
+            <h1 class="main-heading">Ready to excel?</h1>
+            <a href="auth/register.html" class="get-started-btn">
+                <span>Get Started</span>
+                <i data-lucide="arrow-right"></i>
+            </a>
+        </div>
+    </main>
+
+    <script src="js/theme.js"></script>
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+    </script>
+</body>
+</html>
