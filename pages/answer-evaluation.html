@@ -1,0 +1,547 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Answer Evaluation - iScore</title>
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/theme.css">
+    <link rel="stylesheet" href="../css/responsive.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Remove lucide since we're using Font Awesome -->
+    <style>
+        .evaluation-container {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 2rem;
+        }
+
+        .evaluation-header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .evaluation-header h1 {
+            color: #1a1a2e;
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .evaluation-header p {
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        .evaluation-content {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .answer-set-selector {
+            margin-bottom: 2rem;
+        }
+
+        .answer-set-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .answer-set-card {
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid rgba(102, 126, 234, 0.2);
+            border-radius: 16px;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .answer-set-card:hover {
+            border-color: #667eea;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.2);
+        }
+
+        .answer-set-card.selected {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.1);
+        }
+
+        .student-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .student-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+
+        .evaluation-form {
+            display: none;
+            margin-top: 2rem;
+        }
+
+        .question-section {
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid rgba(102, 126, 234, 0.2);
+        }
+
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .question-number {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+
+        .question-marks {
+            color: #666;
+            font-weight: 500;
+        }
+
+        .student-answer {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-left: 4px solid #667eea;
+        }
+
+        .marks-input {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .marks-input input {
+            width: 80px;
+            padding: 0.5rem;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .marks-input input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .submit-evaluation-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 2rem;
+        }
+
+        .submit-evaluation-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .back-btn {
+            background: rgba(255, 255, 255, 0.9);
+            color: #667eea;
+            border: 2px solid #667eea;
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .back-btn:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .loading-state {
+            text-align: center;
+            padding: 3rem;
+            color: #666;
+        }
+
+        .loading-spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="evaluation-container">
+        <a href="../dashboards/tutor-dashboard.html" class="back-btn">
+            <i class="fas fa-arrow-left"></i>
+            Back to Dashboard
+        </a>
+
+        <div class="evaluation-header">
+            <h1><i class="fas fa-clipboard-check"></i> Answer Evaluation</h1>
+            <p>Evaluate student answer sets for the current iCup exam</p>
+        </div>
+
+        <div class="evaluation-content">
+            <div id="loadingState" class="loading-state">
+                <div class="loading-spinner"></div>
+                <p>Loading your evaluation assignments...</p>
+            </div>
+
+            <div id="noAssignments" class="loading-state" style="display: none;">
+                <i class="fas fa-inbox" style="font-size: 3rem; color: #ccc; margin-bottom: 1rem;"></i>
+                <h3>No Evaluation Assignments</h3>
+                <p>You don't have any answer sets assigned for evaluation at the moment.</p>
+            </div>
+
+            <div id="answerSetSelector" class="answer-set-selector" style="display: none;">
+                <h3>Select an Answer Set to Evaluate</h3>
+                <div id="answerSetGrid" class="answer-set-grid">
+                    <!-- Answer sets will be loaded here -->
+                </div>
+            </div>
+
+            <div id="evaluationForm" class="evaluation-form">
+                <h3 id="evaluationTitle">Evaluating: Student Name</h3>
+                <div id="questionsContainer">
+                    <!-- Questions will be loaded here -->
+                </div>
+                <button id="submitEvaluation" class="submit-evaluation-btn">
+                    <i class="fas fa-check"></i> Submit Evaluation
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/supabase-config.js"></script>
+    <script src="../js/api/user.js"></script>
+    <script src="../js/api/exam.js"></script>
+    <script src="../js/api/evaluation.js"></script>
+    <script src="../js/backend-init.js"></script>
+    <script>
+        let currentUser = null;
+        let currentExam = null;
+        let answerSets = [];
+        let selectedAnswerSet = null;
+
+        async function initializeEvaluationPage() {
+            try {
+                await window.waitForBackend();
+
+                // Get current user
+                const { data: { session }, error } = await window.supabaseClient.auth.getSession();
+                if (error || !session || !session.user) {
+                    window.location.href = '../auth/login.html';
+                    return;
+                }
+
+                const userResult = await window.userAPI.getCurrentUser();
+                if (!userResult || userResult.profile.role !== 'tutor') {
+                    alert('Access denied. Only tutors can access this page.');
+                    window.location.href = '../dashboards/tutor-dashboard.html';
+                    return;
+                }
+
+                currentUser = userResult;
+
+                // Get current exam
+                const examResult = await window.examAPI.getCurrentExam();
+                if (!examResult.success || !examResult.data) {
+                    showError('No current exam available for evaluation.');
+                    return;
+                }
+
+                currentExam = examResult.data;
+
+                // Load evaluation assignments
+                await loadEvaluationAssignments();
+
+            } catch (error) {
+                console.error('Error initializing evaluation page:', error);
+                showError('Failed to initialize evaluation page.');
+            }
+        }
+
+        async function loadEvaluationAssignments() {
+            try {
+                const userId = currentUser.user.id || currentUser.user.user_id;
+
+                // Get assignments from evaluator_allocation table
+                const { data: assignments, error } = await window.supabaseClient
+                    .from('evaluator_allocation')
+                    .select('*')
+                    .eq('evaluator_id', userId)
+                    .eq('exam_id', currentExam.exam_id);
+
+                if (error) throw error;
+
+                console.log('Evaluation assignments:', assignments);
+
+                if (!assignments || assignments.length === 0) {
+                    document.getElementById('loadingState').style.display = 'none';
+                    document.getElementById('noAssignments').style.display = 'block';
+                    return;
+                }
+
+                // Get answer sets for all assignments
+                const allAnswerSetIds = [];
+                assignments.forEach(assignment => {
+                    if (assignment.assigned_answer_sets) {
+                        allAnswerSetIds.push(...assignment.assigned_answer_sets);
+                    }
+                });
+
+                if (allAnswerSetIds.length === 0) {
+                    document.getElementById('loadingState').style.display = 'none';
+                    document.getElementById('noAssignments').style.display = 'block';
+                    return;
+                }
+
+                // Fetch answer sets details
+                const { data: answerSetsData, error: answerError } = await window.supabaseClient
+                    .from('answer_sets')
+                    .select(`
+                        *,
+                        user_information!answer_sets_student_id_fkey (
+                            full_name,
+                            profile_picture
+                        )
+                    `)
+                    .in('answer_set_id', allAnswerSetIds);
+
+                if (answerError) throw answerError;
+
+                answerSets = answerSetsData || [];
+
+                // Check which ones are already evaluated
+                for (let answerSet of answerSets) {
+                    const { data: evaluation } = await window.supabaseClient
+                        .from('answer_evaluation')
+                        .select('*')
+                        .eq('answer_set_id', answerSet.answer_set_id)
+                        .single();
+
+                    answerSet.evaluated = !!evaluation;
+                    answerSet.evaluation = evaluation;
+                }
+
+                displayAnswerSets();
+
+            } catch (error) {
+                console.error('Error loading evaluation assignments:', error);
+                showError('Failed to load evaluation assignments.');
+            }
+        }
+
+        function displayAnswerSets() {
+            document.getElementById('loadingState').style.display = 'none';
+            document.getElementById('answerSetSelector').style.display = 'block';
+
+            const grid = document.getElementById('answerSetGrid');
+            grid.innerHTML = answerSets.map(answerSet => `
+                <div class="answer-set-card" onclick="selectAnswerSet('${answerSet.answer_set_id}')">
+                    <div class="student-info">
+                        <div class="student-avatar">
+                            ${answerSet.user_information?.profile_picture 
+                                ? `<img src="${answerSet.user_information.profile_picture}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;" alt="Student">` 
+                                : (answerSet.user_information?.full_name?.charAt(0) || 'S')
+                            }
+                        </div>
+                        <div>
+                            <h4>${answerSet.user_information?.full_name || 'Unknown Student'}</h4>
+                            <p style="color: #666; margin: 0;">Subject: ${answerSet.subject}</p>
+                            <p style="color: #666; margin: 0; font-size: 0.9rem;">
+                                Submitted: ${new Date(answerSet.submission_timestamp).toLocaleString()}
+                            </p>
+                        </div>
+                    </div>
+                    <div style="display: flex; justify-content: between; align-items: center;">
+                        <span style="color: #667eea; font-weight: 600;">
+                            ID: ${answerSet.answer_set_id.substring(0, 8)}...
+                        </span>
+                        ${answerSet.evaluated 
+                            ? '<span style="color: #28a745; font-weight: 600;"><i class="fas fa-check-circle"></i> Evaluated</span>'
+                            : '<span style="color: #ffc107; font-weight: 600;"><i class="fas fa-clock"></i> Pending</span>'
+                        }
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function selectAnswerSet(answerSetId) {
+            selectedAnswerSet = answerSets.find(as => as.answer_set_id === answerSetId);
+            if (!selectedAnswerSet) return;
+
+            document.getElementById('answerSetSelector').style.display = 'none';
+            document.getElementById('evaluationTitle').textContent = 
+                `Evaluating: ${selectedAnswerSet.user_information?.full_name || 'Unknown Student'} - ${selectedAnswerSet.subject}`;
+
+            loadEvaluationForm();
+        }
+
+        function loadEvaluationForm() {
+            const questionsContainer = document.getElementById('questionsContainer');
+            
+            // Get question marks from current exam
+            const questionMarks = currentExam.question_marks || {};
+            const totalQuestions = currentExam.question_count || 10;
+
+            let questionsHTML = '';
+            for (let i = 1; i <= totalQuestions; i++) {
+                const maxMarks = questionMarks[i.toString()] || 10;
+                const currentMarks = selectedAnswerSet.evaluation?.question_marks?.[i.toString()] || '';
+
+                questionsHTML += `
+                    <div class="question-section">
+                        <div class="question-header">
+                            <div class="question-number">Question ${i}</div>
+                            <div class="question-marks">Max: ${maxMarks} marks</div>
+                        </div>
+                        <div class="student-answer">
+                            <strong>Student's Answer:</strong>
+                            <p>${selectedAnswerSet.answers?.[i.toString()] || 'No answer provided'}</p>
+                        </div>
+                        <div class="marks-input">
+                            <label>Marks:</label>
+                            <input 
+                                type="number" 
+                                id="marks_${i}" 
+                                min="0" 
+                                max="${maxMarks}" 
+                                step="0.5"
+                                value="${currentMarks}"
+                                placeholder="0"
+                            >
+                            <span>/ ${maxMarks}</span>
+                        </div>
+                    </div>
+                `;
+            }
+
+            questionsContainer.innerHTML = questionsHTML;
+            document.getElementById('evaluationForm').style.display = 'block';
+        }
+
+        async function submitEvaluation() {
+            try {
+                if (!selectedAnswerSet) return;
+
+                // Collect marks
+                const questionMarks = {};
+                let totalMarks = 0;
+                const maxTotalMarks = currentExam.total_marks || 100;
+
+                const totalQuestions = currentExam.question_count || 10;
+                for (let i = 1; i <= totalQuestions; i++) {
+                    const marksInput = document.getElementById(`marks_${i}`);
+                    const marks = parseFloat(marksInput.value) || 0;
+                    questionMarks[i.toString()] = marks;
+                    totalMarks += marks;
+                }
+
+                // Submit evaluation
+                const evaluationData = {
+                    answer_set_id: selectedAnswerSet.answer_set_id,
+                    evaluator_id: currentUser.user.id || currentUser.user.user_id,
+                    exam_id: currentExam.exam_id,
+                    student_id: selectedAnswerSet.student_id,
+                    subject: selectedAnswerSet.subject,
+                    question_marks: questionMarks,
+                    total_marks: totalMarks,
+                    evaluation_status: 'completed',
+                    evaluated_at: new Date().toISOString()
+                };
+
+                const { data, error } = await window.supabaseClient
+                    .from('answer_evaluation')
+                    .upsert(evaluationData)
+                    .select();
+
+                if (error) throw error;
+
+                alert('Evaluation submitted successfully!');
+                
+                // Go back to answer set selection
+                document.getElementById('evaluationForm').style.display = 'none';
+                await loadEvaluationAssignments();
+
+            } catch (error) {
+                console.error('Error submitting evaluation:', error);
+                alert('Failed to submit evaluation. Please try again.');
+            }
+        }
+
+        function showError(message) {
+            document.getElementById('loadingState').innerHTML = `
+                <i class="fas fa-exclamation-triangle" style="font-size: 3rem; color: #dc3545; margin-bottom: 1rem;"></i>
+                <h3>Error</h3>
+                <p>${message}</p>
+                <button onclick="window.location.reload()" style="margin-top: 1rem; padding: 0.5rem 1rem; background: #667eea; color: white; border: none; border-radius: 8px; cursor: pointer;">
+                    Try Again
+                </button>
+            `;
+        }
+
+        // Event listeners
+        document.getElementById('submitEvaluation').addEventListener('click', submitEvaluation);
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', initializeEvaluationPage);
+    </script>
+</body>
+</html>

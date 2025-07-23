@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>iCup Exam - iScore</title>
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/theme.css">
+    <link rel="stylesheet" href="../css/responsive.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .landing-container {
+            min-height: 100vh;
+            background: var(--bg-primary);
+            padding: 2rem;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .back-btn {
+            background: var(--bg-secondary, #f8fafc);
+            border: 2px solid var(--blue-primary, #3b82f6);
+            color: var(--blue-primary, #3b82f6);
+            width: 50px;
+            height: 50px;
+            border-radius: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-right: 2rem;
+        }
+
+        .back-btn:hover {
+            background: var(--blue-primary, #3b82f6);
+            color: white;
+        }
+
+        .exam-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            background: var(--blue-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .exam-info-section {
+            margin-bottom: 3rem;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 1.5rem;
+        }
+
+        .metadata-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .metadata-card {
+            background: var(--blue-gradient);
+            border-radius: 1rem;
+            padding: 2rem;
+            color: white;
+            box-shadow: var(--shadow-lg);
+            animation: slideIn 0.6s ease-out;
+            transition: transform 0.2s;
+        }
+
+        .metadata-card:hover {
+            transform: translateY(-4px);
+        }
+
+        .metadata-card h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .metadata-card p {
+            opacity: 0.9;
+            line-height: 1.6;
+        }
+
+        .metadata-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .metadata-list li {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .metadata-list li:last-child {
+            border-bottom: none;
+        }
+
+        .footer-section {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--bg-primary);
+            border-top: 1px solid var(--border-color, #e5e7eb);
+            padding: 2rem;
+            display: flex;
+            justify-content: center;
+        }
+
+        .enroll-btn {
+            background: var(--blue-gradient);
+            color: white;
+            border: none;
+            padding: 1rem 3rem;
+            border-radius: 0.75rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .enroll-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .take-exam-btn {
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .take-exam-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .take-exam-btn:hover::before {
+            left: 100%;
+        }
+
+        .take-exam-btn:hover {
+            background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+            transform: translateY(-3px);
+            box-shadow: 0 20px 40px rgba(34, 197, 94, 0.3);
+        }
+
+        .take-exam-btn .btn-icon {
+            font-size: 1.2rem;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .btn-text {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .landing-container {
+                padding: 1rem;
+                padding-bottom: 6rem;
+            }
+
+            .exam-title {
+                font-size: 2rem;
+            }
+
+            .metadata-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .footer-section {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="landing-container">
+        <div class="header">
+            <button class="back-btn" onclick="goBack()">
+                <i class="fas fa-arrow-left"></i>
+            </button>
+            <h1 class="exam-title" id="examTitle">Loading...</h1>
+        </div>
+
+        <div class="exam-info-section">
+            <h2 class="section-title">Exam Information:</h2>
+
+            <div id="loadingMessage" style="text-align: center; padding: 2rem;">
+                <i class="fas fa-spinner fa-spin"></i> Loading exam information...
+            </div>
+
+            <div class="metadata-grid" id="metadataGrid" style="display: none;">
+                <!-- Core Exam Metadata -->
+                <div class="metadata-card">
+                    <h3>
+                        <i class="fas fa-clipboard-list"></i>
+                        Core Exam Metadata
+                    </h3>
+                    <ul class="metadata-list" id="coreMetadata">
+                        <!-- Dynamic content will be loaded here -->
+                    </ul>
+                </div>
+
+                <!-- Scheduling & Availability -->
+                <div class="metadata-card">
+                    <h3>
+                        <i class="fas fa-calendar-alt"></i>
+                        Scheduling & Availability
+                    </h3>
+                    <ul class="metadata-list" id="schedulingMetadata">
+                        <!-- Dynamic content will be loaded here -->
+                    </ul>
+                </div>
+
+                <!-- Evaluation & Marking -->
+                <div class="metadata-card">
+                    <h3>
+                        <i class="fas fa-user-graduate"></i>
+                        Evaluation & Marking
+                    </h3>
+                    <ul class="metadata-list" id="evaluationMetadata">
+                        <!-- Dynamic content will be loaded here -->
+                    </ul>
+                </div>
+
+                <!-- Miscellaneous -->
+                <div class="metadata-card">
+                    <h3>
+                        <i class="fas fa-info-circle"></i>
+                        Miscellaneous
+                    </h3>
+                    <ul class="metadata-list" id="miscMetadata">
+                        <!-- Dynamic content will be loaded here -->
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer-section">
+        <button class="enroll-btn" id="actionBtn" onclick="handleActionClick()">
+            <span class="btn-text">
+                <i class="fas fa-plus" id="btnIcon"></i>
+                <span id="btnText">Enroll Now</span>
+            </span>
+        </button>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../js/supabase-config.js"></script>
+    <script src="../js/api/user.js"></script>
+    <script src="../js/api/exam.js"></script>
+    <script src="../js/api/proctor.js"></script>
+    <script src="../js/api/evaluation.js"></script>
+    <script src="../js/api/payment.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/backend-init.js"></script>
+    <script src="../js/theme.js"></script>
+    <script>
+        let currentUser = null;
+        let currentExam = null;
+        let isEnrolled = false;
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Wait for backend to be ready
+            await window.waitForBackend();
+
+            // Check authentication
+            const user = await window.authManager.getCurrentUser();
+            if (!user) {
+                window.location.href = '../auth/login.html';
+                return;
+            }
+
+            if (user.profile.role !== 'student') {
+                window.location.href = '../auth/login.html';
+                return;
+            }
+
+            currentUser = user;
+
+            // Load latest exam data
+            await loadLatestExamData();
+
+            // Check if student is already enrolled
+            await checkEnrollmentStatus();
+        });
+
+        async function loadLatestExamData() {
+            try {
+                console.log('Loading latest exam data...');
+                
+                // Get current/latest exam by week number
+                const examResult = await window.examAPI.getCurrentExam();
+                console.log('Exam result:', examResult);
+                
+                if (examResult.success && examResult.data) {
+                    currentExam = examResult.data;
+                    console.log('Latest exam found:', currentExam);
+                    displayExamData(currentExam);
+                } else {
+                    console.log('No current exam found, checking upcoming exams...');
+                    // If no current exam, get all exams and find the latest by week number
+                    const allExamsResult = await window.examAPI.getAllExams();
+                    if (allExamsResult.success && allExamsResult.data && allExamsResult.data.length > 0) {
+                        // Sort by week number descending to get the latest
+                        const sortedExams = allExamsResult.data.sort((a, b) => b.week_number - a.week_number);
+                        currentExam = sortedExams[0];
+                        console.log('Latest exam from all exams:', currentExam);
+                        displayExamData(currentExam);
+                    } else {
+                        console.log('No exams found in database');
+                        showNoExamMessage();
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading exam data:', error);
+                showErrorMessage();
+            }
+        }
+
+        function displayExamData(exam) {
+            // Update page title
+            document.getElementById('examTitle').textContent = exam.title || 'iCup Weekly Exam';
+
+            // Hide loading message and show metadata grid
+            document.getElementById('loadingMessage').style.display = 'none';
+            document.getElementById('metadataGrid').style.display = 'grid';
+
+            // Populate Core Exam Metadata
+            const coreMetadata = document.getElementById('coreMetadata');
+            coreMetadata.innerHTML = `
+                <li><strong>Exam Type:</strong> ${exam.exam_type || 'Weekly Assessment'}</li>
+                <li><strong>Duration:</strong> ${exam.duration_minutes ? Math.floor(exam.duration_minutes / 60) + ' Hours' : '3 Hours'}</li>
+                <li><strong>Total Marks:</strong> ${exam.total_marks || 100}</li>
+                <li><strong>Question Count:</strong> ${exam.question_count || 'Not specified'}</li>
+                <li><strong>Language:</strong> ${exam.language || 'Bangla'}</li>
+                <li><strong>Difficulty:</strong> ${exam.difficulty_level || 'Standard'}</li>
+            `;
+
+            // Populate Scheduling & Availability
+            const schedulingMetadata = document.getElementById('schedulingMetadata');
+            const scheduledDate = new Date(exam.scheduled_at);
+            const availableFrom = new Date(exam.available_from);
+            const availableUntil = new Date(exam.available_until);
+            const submitDeadline = new Date(exam.submit_deadline);
+
+            schedulingMetadata.innerHTML = `
+                <li><strong>Exam Date:</strong> ${scheduledDate.toLocaleDateString('en-GB')} (${scheduledDate.toLocaleDateString('en-US', { weekday: 'long' })})</li>
+                <li><strong>Exam Time:</strong> ${availableFrom.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })} - ${availableUntil.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })}</li>
+                <li><strong>Week Number:</strong> Week ${exam.week_number}</li>
+                <li><strong>Submit Deadline:</strong> ${submitDeadline.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })}</li>
+                <li><strong>Late Submission:</strong> ${exam.allow_late_submission ? 'Allowed' : 'Not Allowed'}</li>
+            `;
+
+            // Populate Evaluation & Marking
+            const evaluationMetadata = document.getElementById('evaluationMetadata');
+            const markingDeadline = new Date(exam.marking_deadline);
+
+            evaluationMetadata.innerHTML = `
+                <li><strong>Evaluation Type:</strong> ${exam.evaluation_type === 'manual' ? 'Manual by Tutors' : 'Automated'}</li>
+                <li><strong>Marking Deadline:</strong> ${markingDeadline.toLocaleDateString('en-GB')} ${markingDeadline.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })}</li>
+                <li><strong>Partial Marks:</strong> ${exam.allow_partial_marks ? 'Allowed' : 'Not Allowed'}</li>
+                <li><strong>Grade Level:</strong> ${exam.grade_level || 'Not specified'}</li>
+            `;
+
+            // Populate Miscellaneous
+            const miscMetadata = document.getElementById('miscMetadata');
+            const subjects = Array.isArray(exam.subject) ? exam.subject.join(', ') : (exam.subject || 'All Core Subjects');
+            const fee = exam.fee ? `৳${exam.fee}` : 'Free';
+
+            miscMetadata.innerHTML = `
+                <li><strong>Subjects:</strong> ${subjects}</li>
+                <li><strong>Category:</strong> ${exam.category || 'iCup'}</li>
+                <li><strong>Fee:</strong> ${fee}</li>
+                <li><strong>Payment Number:</strong> ${exam.pay_number || 'Not specified'}</li>
+                <li><strong>Question Sets:</strong> ${exam.question_pdf_url ? Object.keys(exam.question_pdf_url).length : 'Multiple sets available'}</li>
+            `;
+        }
+
+        function showNoExamMessage() {
+            document.getElementById('loadingMessage').innerHTML = `
+                <i class="fas fa-exclamation-triangle"></i> 
+                No active or upcoming exams found at the moment.
+            `;
+            document.getElementById('examTitle').textContent = 'No Active Exam';
+        }
+
+        function showErrorMessage() {
+            document.getElementById('loadingMessage').innerHTML = `
+                <i class="fas fa-exclamation-circle"></i> 
+                Error loading exam information. Please try again later.
+            `;
+            document.getElementById('examTitle').textContent = 'Error Loading Exam';
+        }
+
+        async function checkEnrollmentStatus() {
+            try {
+                if (!currentExam || !currentUser) {
+                    console.log('Missing currentExam or currentUser for enrollment check');
+                    return;
+                }
+
+                console.log('Checking enrollment for user:', currentUser.user.id, 'week:', currentExam.week_number);
+
+                // Check if student is enrolled for the latest exam
+                isEnrolled = await window.examAPI.isStudentEnrolledInLatestExam(currentUser.user.id);
+                console.log('Enrollment status:', isEnrolled);
+
+                const actionBtn = document.getElementById('actionBtn');
+                const btnIcon = document.getElementById('btnIcon');
+                const btnText = document.getElementById('btnText');
+                
+                if (isEnrolled) {
+                    btnText.textContent = 'Take Exam';
+                    btnIcon.className = 'fas fa-play btn-icon';
+                    actionBtn.classList.remove('enroll-btn');
+                    actionBtn.classList.add('take-exam-btn');
+                } else {
+                    btnText.textContent = 'Enroll Now';
+                    btnIcon.className = 'fas fa-plus';
+                    actionBtn.classList.add('enroll-btn');
+                    actionBtn.classList.remove('take-exam-btn');
+                }
+            } catch (error) {
+                console.error('Error checking enrollment status:', error);
+            }
+        }
+
+        function goBack() {
+            window.location.href = '../dashboards/student-dashboard.html';
+        }
+
+        function handleActionClick() {
+            if (!currentExam) {
+                alert('No active exam available for enrollment.');
+                return;
+            }
+
+            if (isEnrolled) {
+                // Redirect to exam participation page
+                window.location.href = '../dashboards-sections/student/exam-participation.html';
+            } else {
+                // Redirect to payment page for enrollment
+                window.location.href = 'student-icup-payment.html';
+            }
+        }
+    </script>
+</body>
+</html>

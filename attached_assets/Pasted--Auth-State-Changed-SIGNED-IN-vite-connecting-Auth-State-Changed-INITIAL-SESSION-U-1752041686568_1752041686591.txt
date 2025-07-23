@@ -1,0 +1,40 @@
+🔐 Auth State Changed: SIGNED_IN
+[vite] connecting...
+🔐 Auth State Changed: INITIAL_SESSION
+👤 User Signed In: Nazmus Sakib Shafin
+[vite] connected.
+Current admin loaded: Nazmus Sakib Shafin
+Loaded notifications: 
+Array [{…}]
+Found enrollment request by name match: 
+Object {id: "02f88861-2e28-4796-8887-6e2dd7901284", student_full_name: "arekjon stufrnt", student_user_id: "67ea6c32-fea4-4712-8752-7225bb45ad5b", transaction_id: "rthghgfgnhg", bkash_number: "+8801994505856", …}
+additional_information: "sdfghh"
+approved_at: null
+approved_by: null
+bkash_number: "+8801994505856"
+created_at: "2025-07-08T16:47:44.201533+00:00"
+exam_id: "7a478876-d74b-4806-a7f3-37b2130ace04"
+exam_name: "iCup Week 27"
+fee: 100
+id: "02f88861-2e28-4796-8887-6e2dd7901284"
+pay_number: "01994505856"
+rejected_at: null
+rejected_by: null
+rejection_reason: null
+screenshot_url: "https://szjekvevdgzlqbifzutd.supabase.co/storage/v1/object/public/uploads/payment_screenshots/67ea6c32-fea4-4712-8752-7225bb45ad5b_1751993263291.jpg"
+status: "pending"
+student_full_name: "arekjon stufrnt"
+student_user_id: "67ea6c32-fea4-4712-8752-7225bb45ad5b"
+transaction_id: "rthghgfgnhg"
+updated_at: "2025-07-08T16:47:44.201533+00:00"
+week_number: 27
+[[Prototype]]: Object
+Error loading student info: 
+ReferenceError {}
+message: "studentUserId is not defined"
+stack: "ReferenceError: studentUserId is not defined↵ at createEnrollmentRequestCardWithInfo (https://8c6a8d44-3f7b-4a90-a9a6-2c57cdebb71e-00-quwe71hl5luk.pike.replit.dev/dashboards-sections/admin/notifications.html:464:21)↵ at async https://8c6a8d44-3f7b-4a90-a9a6-2c57cdebb71e-00-quwe71hl5luk.pike.replit.dev/dashboards-sections/admin/notifications.html:369:28↵ at async Promise.all (index 0)↵ at async displayNotifications (https://8c6a8d44-3f7b-4a90-a9a6-2c57cdebb71e-00-quwe71hl5luk.pike.replit.dev/dashboards-sections/admin/notifications.html:367:39)"
+get stack: ƒ ()
+set stack: ƒ ()
+[[Prototype]]: Object
+
+studentProfilePicture is not defined

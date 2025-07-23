@@ -1,0 +1,112 @@
+[
+  {
+    "column_name": "id",
+    "data_type": "uuid",
+    "is_nullable": "NO"
+  },
+  {
+    "column_name": "student_full_name",
+    "data_type": "text",
+    "is_nullable": "NO"
+  },
+  {
+    "column_name": "student_user_id",
+    "data_type": "uuid",
+    "is_nullable": "YES"
+  },
+  {
+    "column_name": "transaction_id",
+    "data_type": "text",
+    "is_nullable": "NO"
+  },
+  {
+    "column_name": "bkash_number",
+    "data_type": "text",
+    "is_nullable": "NO"
+  },
+  {
+    "column_name": "screenshot_url",
+    "data_type": "text",
+    "is_nullable": "YES"
+  },
+  {
+    "column_name": "additional_information",
+    "data_type": "text",
+    "is_nullable": "YES"
+  },
+  {
+    "column_name": "exam_name",
+    "data_type": "text",
+    "is_nullable": "NO"
+  },
+  {
+    "column_name": "exam_id",
+    "data_type": "uuid",
+    "is_nullable": "NO"
+  },
+  {
+    "column_name": "week_number",
+    "data_type": "integer",
+    "is_nullable": "NO"
+  },
+  {
+    "column_name": "fee",
+    "data_type": "integer",
+    "is_nullable": "NO"
+  },
+  {
+    "column_name": "pay_number",
+    "data_type": "text",
+    "is_nullable": "NO"
+  },
+  {
+    "column_name": "status",
+    "data_type": "text",
+    "is_nullable": "YES"
+  },
+  {
+    "column_name": "approved_at",
+    "data_type": "timestamp with time zone",
+    "is_nullable": "YES"
+  },
+  {
+    "column_name": "approved_by",
+    "data_type": "uuid",
+    "is_nullable": "YES"
+  },
+  {
+    "column_name": "rejected_at",
+    "data_type": "timestamp with time zone",
+    "is_nullable": "YES"
+  },
+  {
+    "column_name": "rejected_by",
+    "data_type": "uuid",
+    "is_nullable": "YES"
+  },
+  {
+    "column_name": "rejection_reason",
+    "data_type": "text",
+    "is_nullable": "YES"
+  },
+  {
+    "column_name": "created_at",
+    "data_type": "timestamp with time zone",
+    "is_nullable": "YES"
+  },
+  {
+    "column_name": "updated_at",
+    "data_type": "timestamp with time zone",
+    "is_nullable": "YES"
+  },
+  {
+    "column_name": "paid_by_user_id",
+    "data_type": "uuid",
+    "is_nullable": "YES"
+  },
+  {
+    "column_name": "paid_by",
+    "data_type": "text",
+    "is_nullable": "YES"
+  }
+]

@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>iCup Enrollment - iScore</title>
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/theme.css">
+    <link rel="stylesheet" href="../css/responsive.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .payment-container {
+            min-height: 100vh;
+            background: var(--bg-primary);
+            padding: 2rem;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+        }
+
+        .back-btn {
+            background: var(--bg-secondary);
+            border: 2px solid var(--blue-primary);
+            color: var(--blue-primary);
+            width: 50px;
+            height: 50px;
+            border-radius: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-right: 2rem;
+        }
+
+        .back-btn:hover {
+            background: var(--blue-primary);
+            color: white;
+        }
+
+        .page-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .theme-toggle-btn {
+            background: var(--bg-secondary);
+            border: 2px solid var(--border-color);
+            color: var(--text-primary);
+            width: 50px;
+            height: 50px;
+            border-radius: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .form-container {
+            background: var(--bg-secondary);
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: var(--shadow-lg);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .form-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 2rem;
+            background: var(--blue-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .section {
+            margin-bottom: 2rem;
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            overflow: hidden;
+        }
+
+        .section-header {
+            background: var(--blue-gradient);
+            color: white;
+            padding: 1rem;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .section-content {
+            padding: 1.5rem;
+        }
+
+        .details-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .details-table td {
+            padding: 0.75rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .details-table td:first-child {
+            font-weight: 600;
+            color: var(--text-secondary);
+            width: 40%;
+        }
+
+        .details-table td:last-child {
+            color: var(--text-primary);
+        }
+
+        .details-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid var(--border-color);
+            border-radius: 0.5rem;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--blue-primary);
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            display: block;
+            width: 100%;
+        }
+
+        .file-input-display {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 1rem;
+            border: 2px dashed var(--border-color);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: var(--bg-primary);
+            color: var(--text-secondary);
+            text-decoration: none;
+        }
+
+        .file-input-display:hover {
+            border-color: var(--blue-primary);
+            background: var(--bg-tertiary);
+            color: var(--blue-primary);
+        }
+
+        .image-preview {
+            margin-top: 1rem;
+            position: relative;
+            display: inline-block;
+        }
+
+        .image-preview img {
+            max-width: 200px;
+            max-height: 200px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+
+        .remove-image {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: rgba(255, 0, 0, 0.7);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .steps-section {
+            background: var(--bg-tertiary);
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .steps-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+        }
+
+        .step {
+            margin-bottom: 1rem;
+            padding: 1rem;
+            background: var(--bg-secondary);
+            border-radius: 0.5rem;
+            border-left: 4px solid var(--blue-primary);
+        }
+
+        .step-title {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .step-description {
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .warning-note {
+            background: #fef3cd;
+            border: 1px solid #fadb14;
+            color: #8b4513;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-top: 0.5rem;
+            font-weight: 500;
+        }
+
+        .submit-btn {
+            background: var(--blue-gradient);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 0.75rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: var(--shadow-lg);
+            width: 100%;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        @media (max-width: 768px) {
+            .payment-container {
+                padding: 1rem;
+            }
+
+            .page-title {
+                font-size: 1.5rem;
+            }
+
+            .form-container {
+                padding: 1rem;
+            }
+
+            .details-table td:first-child {
+                width: 50%;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+</head>
+<body>
+    <div class="payment-container">
+        <div class="header">
+            <div class="header-left">
+                <button class="back-btn" onclick="goBack()">
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+                <h1 class="page-title">iCup Enrollment</h1>
+            </div>
+            <button class="theme-toggle-btn" id="themeToggle">
+                <div class="theme-icons">
+                    <span class="theme-icon light material-symbols-outlined">light_mode</span>
+                    <span class="theme-icon dark material-symbols-outlined">dark_mode</span>
+                </div>
+            </button>
+        </div>
+
+        <div class="form-container">
+            <h2 class="form-title">Payment Proof & Details</h2>
+
+            <!-- Section 1: Exam Details -->
+            <div class="section">
+                <div class="section-header">
+                    <i class="fas fa-clipboard-list"></i>
+                    1. Exam Details
+                </div>
+                <div class="section-content">
+                    <table class="details-table">
+                        <tr>
+                            <td>Exam Name</td>
+                            <td id="examName">Loading...</td>
+                        </tr>
+                        <tr>
+                            <td>Week Number</td>
+                            <td id="weekNumber">Loading...</td>
+                        </tr>
+                        <tr>
+                            <td>Paying for</td>
+                            <td id="payingFor">Loading...</td>
+                        </tr>
+                        <tr>
+                            <td>Student UserID</td>
+                            <td id="studentUserId">Loading...</td>
+                        </tr>
+                        <tr>
+                            <td>Paid by</td>
+                            <td id="paidBy">Loading...</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Section 2: Payment Details -->
+            <div class="section">
+                <div class="section-header">
+                    <i class="fas fa-credit-card"></i>
+                    2. Payment Details
+                </div>
+                <div class="section-content">
+                    <table class="details-table">
+                        <tr>
+                            <td>Send Money Number</td>
+                            <td id="paymentNumber">Loading...</td>
+                        </tr>
+                        <tr>
+                            <td>Pay Amount</td>
+                            <td id="payAmount">Loading...</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Section 3: Transaction Information -->
+            <div class="section">
+                <div class="section-header">
+                    <i class="fas fa-receipt"></i>
+                    3. Transaction Information
+                </div>
+                <div class="section-content">
+                    <form id="paymentForm">
+                        <div class="form-group">
+                            <label class="form-label" for="transactionId">Transaction ID</label>
+                            <input type="text" id="transactionId" name="transactionId" class="form-input" required placeholder="Enter transaction ID">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="bkashNumber">Your bKash Number</label>
+                            <input type="tel" id="bkashNumber" name="bkashNumber" class="form-input" required placeholder="01XXXXXXXXX">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="screenshot">Payment Screenshot</label>
+                            <div class="file-input-wrapper">
+                                <input type="file" id="screenshot" name="screenshot" accept="image/*" required style="display: none;">
+                                <label for="screenshot" class="file-input-display">
+                                    <i class="fas fa-cloud-upload-alt"></i>
+                                    <span>Click to upload screenshot</span>
+                                </label>
+                                <div id="imagePreview" class="image-preview" style="display: none;">
+                                    <img id="previewImg" src="" alt="Preview">
+                                    <button type="button" class="remove-image" onclick="removeImage()">×</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="additionalNotes">Additional Notes</label>
+                            <textarea id="additionalNotes" name="additionalNotes" class="form-input" rows="3" placeholder="Any additional information (optional)"></textarea>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Section 4: Steps -->
+            <div class="steps-section">
+                <h3 class="steps-title">
+                    <i class="fas fa-list-ol"></i>
+                    Steps to Complete Payment
+                </h3>
+
+                <div class="step">
+                    <div class="step-title">Step 1. Send</div>
+                    <div class="step-description">
+                        Send exactly <strong id="stepPayAmount">Loading...</strong> to the bKash number mentioned in Payment Details. Copy the transaction ID & Take a screenshot of that page.
+                        <div class="warning-note">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            Note: Any kind of payment (even if it's accidental) is non-refundable. SO BE CAREFUL
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-title">Step 2. Fill out form</div>
+                    <div class="step-description">
+                        Fill out your bKash Number, paste the Transaction ID, upload the screenshot.
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="submit-btn" id="submitBtn" form="paymentForm">
+                <i class="fas fa-paper-plane"></i>
+                SUBMIT
+            </button>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../js/supabase-config.js"></script>
+    <script src="../js/api/user.js"></script>
+    <script src="../js/api/exam.js"></script>
+    <script src="../js/api/proctor.js"></script>
+    <script src="../js/api/evaluation.js"></script>
+    <script src="../js/api/payment.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/backend-init.js"></script>
+    <script src="../js/theme.js"></script>
+    <script>
+        let currentUser = null;
+        let currentExam = null;
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Wait for backend to be ready
+            await window.waitForBackend();
+
+            // Check authentication
+            const user = await window.authManager.getCurrentUser();
+            if (!user) {
+                window.location.href = '../auth/login.html';
+                return;
+            }
+
+            if (user.profile.role !== 'student') {
+                window.location.href = '../auth/login.html';
+                return;
+            }
+
+            currentUser = user;
+
+            // Load exam details and payment information
+            await loadExamDetails();
+            setupFormHandlers();
+        });
+
+        async function loadExamDetails() {
+            try {
+                console.log('Loading exam details for payment...');
+
+                // Get current/latest exam by week number (same approach as landing page)
+                const examResult = await window.examAPI.getCurrentExam();
+                console.log('Payment exam result:', examResult);
+
+                if (examResult.success && examResult.data) {
+                    currentExam = examResult.data;
+                    console.log('Latest exam found:', currentExam);
+                } else {
+                    console.log('No current exam found, checking all exams...');
+                    // Fallback: get all exams and find the latest by week number
+                    const allExamsResult = await window.examAPI.getAllExams();
+                    if (allExamsResult.success && allExamsResult.data && allExamsResult.data.length > 0) {
+                        // Sort by week number descending to get the latest
+                        const sortedExams = allExamsResult.data.sort((a, b) => b.week_number - a.week_number);
+                        currentExam = sortedExams[0];
+                        console.log('Latest exam from all exams:', currentExam);
+                    } else {
+                        console.log('No exams found in database');
+                        alert('No active exams found. Please check back later.');
+                        return;
+                    }
+                }
+
+                if (currentExam) {
+                    // Check registration deadline first
+                    const registrationDeadline = new Date(currentExam.registration_deadline);
+                    const now = new Date();
+                    
+                    if (now > registrationDeadline) {
+                        // Registration deadline has passed
+                        document.querySelector('.form-container').innerHTML = `
+                            <div style="text-align: center; padding: 3rem;">
+                                <i class="fas fa-clock" style="font-size: 4rem; color: #ff6b6b; margin-bottom: 1rem;"></i>
+                                <h2 style="color: var(--text-primary); margin-bottom: 1rem;">Registration Deadline Passed</h2>
+                                <p style="color: var(--text-secondary); font-size: 1.1rem; margin-bottom: 2rem;">
+                                    The registration deadline for <strong>${currentExam.title}</strong> (Week ${currentExam.week_number}) 
+                                    was ${registrationDeadline.toLocaleDateString()} at ${registrationDeadline.toLocaleTimeString()}.
+                                </p>
+                                <p style="color: var(--text-secondary);">
+                                    Please wait for the next exam cycle to register.
+                                </p>
+                                <button onclick="goBack()" style="
+                                    background: var(--blue-gradient);
+                                    color: white;
+                                    border: none;
+                                    padding: 1rem 2rem;
+                                    border-radius: 0.75rem;
+                                    font-size: 1.1rem;
+                                    font-weight: 600;
+                                    cursor: pointer;
+                                    margin-top: 2rem;
+                                ">
+                                    <i class="fas fa-arrow-left"></i> Go Back
+                                </button>
+                            </div>
+                        `;
+                        return;
+                    }
+                    // Populate exam details
+                    document.getElementById('examName').textContent = currentExam.title || 'iCup Exam';
+                    document.getElementById('weekNumber').textContent = currentExam.week_number || 'N/A';
+                    document.getElementById('payingFor').textContent = currentUser.profile.full_name;
+                    document.getElementById('studentUserId').textContent = currentUser.user.id;
+                    document.getElementById('paidBy').textContent = currentUser.profile.full_name;
+
+                    // Populate payment details
+                    document.getElementById('paymentNumber').textContent = currentExam.pay_number || 'N/A';
+                    document.getElementById('payAmount').textContent = `${currentExam.fee || 0}tk`;
+                    document.getElementById('stepPayAmount').textContent = `${currentExam.fee || 0}tk`;
+                } else {
+                    alert('Failed to load exam details. Please try again.');
+                }
+            } catch (error) {
+                console.error('Error loading exam details:', error);
+                alert('Failed to load exam details. Please try again.');
+            }
+        }
+
+        function setupFormHandlers() {
+            // File input handler
+            const fileInput = document.getElementById('screenshot');
+            const fileDisplay = document.querySelector('.file-input-display span');
+            const imagePreview = document.getElementById('imagePreview');
+            const previewImg = document.getElementById('previewImg');
+
+            fileInput.addEventListener('change', function(e) {
+                if (e.target.files.length > 0) {
+                    const file = e.target.files[0];
+                    fileDisplay.textContent = file.name;
+
+                    // Show image preview
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        previewImg.src = e.target.result;
+                        imagePreview.style.display = 'block';
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    fileDisplay.textContent = 'Click to upload screenshot';
+                    imagePreview.style.display = 'none';
+                }
+            });
+
+            // Form submission
+            document.getElementById('paymentForm').addEventListener('submit', handleFormSubmission);
+        }
+
+        function removeImage() {
+            const fileInput = document.getElementById('screenshot');
+            const fileDisplay = document.querySelector('.file-input-display span');
+            const imagePreview = document.getElementById('imagePreview');
+
+            fileInput.value = '';
+            fileDisplay.textContent = 'Click to upload screenshot';
+            imagePreview.style.display = 'none';
+        }
+
+        async function handleFormSubmission(e) {
+            e.preventDefault();
+
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
+
+            try {
+                const formData = new FormData(e.target);
+                const screenshot = formData.get('screenshot');
+
+                // Validate required fields
+                if (!formData.get('transactionId') || !formData.get('bkashNumber') || !screenshot) {
+                    throw new Error('Please fill in all required fields');
+                }
+                console.log('Screenshot file:', screenshot);
+                console.log('Complete enrollment data being submitted:', {
+                    student_full_name: currentUser.profile.full_name,
+                    student_user_id: currentUser.user.id,
+                    transaction_id: formData.get('transactionId'),
+                    bkash_number: formData.get('bkashNumber'),
+                    screenshot: screenshot ? screenshot.name : 'No file',
+                    additional_information: formData.get('additionalNotes'),
+                    exam_name: currentExam.title,
+                    exam_id: currentExam.exam_id,
+                    week_number: currentExam.week_number,
+                    fee: currentExam.fee,
+                    pay_number: currentExam.pay_number
+                });
+
+                // Prepare enrollment request data
+                const enrollmentData = {
+                    student_full_name: currentUser.profile.full_name,
+                    student_user_id: currentUser.user.id,
+                    transaction_id: formData.get('transactionId'),
+                    bkash_number: formData.get('bkashNumber'),
+                    screenshot: formData.get('screenshot'),
+                    additional_information: formData.get('additionalNotes'),
+                    exam_name: currentExam.title,
+                    exam_id: currentExam.exam_id,
+                    week_number: currentExam.week_number,
+                    fee: currentExam.fee,
+                    pay_number: currentExam.pay_number
+                };
+
+                // Submit enrollment request
+                const result = await window.paymentAPI.submitEnrollmentRequest(enrollmentData);
+
+                if (result.success) {
+                    console.log('✅ Enrollment request successfully stored:', result.data);
+
+                    // Also create a notification for admin
+                    try {
+                        // Get all admin users
+                        const adminResult = await window.userAPI.getAllUsers();
+                        if (adminResult.success) {
+                            const admins = adminResult.data.filter(user => user.role === 'admin');
+
+                            // Create notification for each admin
+                            const notifications = admins.map(admin => ({
+                                user_id: admin.user_id,
+                                title: 'New iCup Enrollment Request',
+                                message: `${currentUser.profile.full_name} has submitted an enrollment request for ${currentExam.title} (Week ${currentExam.week_number})`,
+                                type: 'enrollment_request',
+                                related_user_id: currentUser.user.id,
+                                data: {
+                                    enrollment_request_id: result.data.id,
+                                    student_user_id: currentUser.user.id,
+                                    student_full_name: currentUser.profile.full_name,
+                                    transaction_id: formData.get('transactionId'),
+                                    bkash_number: formData.get('bkashNumber'),
+                                    exam_name: currentExam.title,
+                                    exam_id: currentExam.exam_id,
+                                    week_number: currentExam.week_number,
+                                    fee: currentExam.fee,
+                                    pay_number: currentExam.pay_number,
+                                    additional_information: formData.get('additionalNotes')
+                                }
+                            }));
+
+                            const notificationResult = await window.supabaseClient.from('notifications').insert(notifications);
+                            console.log('✅ Admin notifications created:', notificationResult);
+                        }
+                    } catch (notificationError) {
+                        console.warn('Failed to create admin notifications:', notificationError);
+                    }
+
+                    alert(`Enrollment request submitted successfully!\n\nSubmitted Data:\n- Student: ${currentUser.profile.full_name}\n- Transaction ID: ${formData.get('transactionId')}\n- Phone: ${formData.get('bkashNumber')}\n- Exam: ${currentExam.title} (Week ${currentExam.week_number})\n- Fee: ${currentExam.fee} TK\n\nYou will be notified once approved.`);
+                    window.location.href = '#student-dashboard';
+                } else {
+                    throw new Error(result.error);
+                }
+            } catch (error) {
+                console.error('Error submitting payment:', error);
+                alert('Failed to submit payment proof: ' + error.message);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> SUBMIT';
+            }
+        }
+
+        function goBack() {
+            window.location.href = 'icup-landing-student.html';
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,29 @@
+Error fetching user profile: 
+TypeError {}
+message: "Cannot read properties of null (reading 'from')"
+stack: "TypeError: Cannot read properties of null (reading 'from')↵ at UserAPI.getUserProfile (https://98511534-040f-42bb-ac07-efbfec5a42f2-00-3rqkumexp0hnp.sisko.replit.dev/js/api/user.js:145:10)↵ at BackendService.handleUserSignIn (https://98511534-040f-42bb-ac07-efbfec5a42f2-00-3rqkumexp0hnp.sisko.replit.dev/js/backend-init.js:130:48)↵ at Object.callback (https://98511534-040f-42bb-ac07-efbfec5a42f2-00-3rqkumexp0hnp.sisko.replit.dev/js/backend-init.js:120:14)↵ at https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2:7:49131↵ at Array.map (<anonymous>)↵ at i._notifyAllSubscribers (https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2:7:49104)↵ at BroadcastChannel.<anonymous> (https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2:7:20026)"
+get stack: ƒ ()
+set stack: ƒ ()
+[[Prototype]]: Object
+
+👤 User Signed In: povolo5263@boxmach.com
+🔐 Auth State Changed: SIGNED_IN
+Error fetching user profile: 
+TypeError {}
+message: "Cannot read properties of null (reading 'from')"
+stack: "TypeError: Cannot read properties of null (reading 'from')↵ at UserAPI.getUserProfile (https://98511534-040f-42bb-ac07-efbfec5a42f2-00-3rqkumexp0hnp.sisko.replit.dev/js/api/user.js:145:10)↵ at BackendService.handleUserSignIn (https://98511534-040f-42bb-ac07-efbfec5a42f2-00-3rqkumexp0hnp.sisko.replit.dev/js/backend-init.js:130:48)↵ at Object.callback (https://98511534-040f-42bb-ac07-efbfec5a42f2-00-3rqkumexp0hnp.sisko.replit.dev/js/backend-init.js:120:14)↵ at https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2:7:49131↵ at Array.map (<anonymous>)↵ at i._notifyAllSubscribers (https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2:7:49104)↵ at i._recoverAndRefresh (https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2:7:47900)↵ at async i._initialize (https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2:7:21481)↵ at async https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2:7:20357"
+get stack: ƒ ()
+set stack: ƒ ()
+[[Prototype]]: Object
+
+at t.value (https://98511534-040f-42bb-ac07-efbfec5a42f2-00-3rqkumexp0hnp.sisko.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:17465)
+at new t (https://98511534-040f-42bb-ac07-efbfec5a42f2-00-3rqkumexp0hnp.sisko.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:12630)
+at t.value (https://98511534-040f-42bb-ac07-efbfec5a42f2-00-3rqkumexp0hnp.sisko.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:32766)
+at https://98511534-040f-42bb-ac07-efbfec5a42f2-00-3rqkumexp0hnp.sisko.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:34400
+👤 User Signed In: povolo5263@boxmach.com
+🔐 Auth State Changed: INITIAL_SESSION
+[vite] connecting...
+Theme toggle button not found
+[vite] connected.
+🔐 Auth State Changed: SIGNED_IN
+👤 User Signed In: Eren Yeager

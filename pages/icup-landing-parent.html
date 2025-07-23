@@ -1,0 +1,591 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>iCup Landing - Parent - iScore</title>
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/theme.css">
+    <link rel="stylesheet" href="../css/responsive.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .landing-container {
+            min-height: 100vh;
+            background: var(--bg-primary);
+            padding: 2rem;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+        }
+
+        .back-btn {
+            background: var(--bg-secondary);
+            border: 2px solid var(--blue-primary);
+            color: var(--blue-primary);
+            width: 50px;
+            height: 50px;
+            border-radius: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .back-btn:hover {
+            background: var(--blue-primary);
+            color: white;
+        }
+
+        .exam-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            text-align: center;
+            background: var(--blue-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .theme-toggle-btn {
+            background: var(--bg-secondary);
+            border: 2px solid var(--border-color);
+            color: var(--text-primary);
+            width: 50px;
+            height: 50px;
+            border-radius: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .exam-info-section {
+            max-width: 1000px;
+            margin: 0 auto 3rem auto;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .metadata-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .metadata-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: var(--shadow-lg);
+            transition: all 0.3s ease;
+            animation: slideIn 0.6s ease-out;
+        }
+
+        .metadata-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .metadata-card.core {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .metadata-card.scheduling {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+
+        .metadata-card.miscellaneous {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .card-icon {
+            font-size: 1.5rem;
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .metadata-item {
+            margin-bottom: 0.75rem;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .metadata-item:last-child {
+            border-bottom: none;
+        }
+
+        .metadata-label {
+            font-weight: 500;
+            opacity: 0.9;
+            font-size: 0.9rem;
+        }
+
+        .metadata-value {
+            font-weight: 600;
+            margin-top: 0.25rem;
+        }
+
+        .students-section {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: var(--bg-secondary);
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .students-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .students-table {
+            width: 100%;
+            border-collapse: collapse;
+            border-radius: 0.5rem;
+            overflow: hidden;
+            box-shadow: var(--shadow-md);
+        }
+
+        .students-table th {
+            background: var(--blue-gradient);
+            color: white;
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .students-table td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--bg-primary);
+        }
+
+        .students-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .enrollment-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .status-enrolled {
+            color: var(--green-primary);
+            font-weight: 600;
+        }
+
+        .status-not-enrolled {
+            color: var(--red-primary);
+            font-weight: 600;
+        }
+
+        .enroll-btn {
+            background: var(--blue-gradient);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .enroll-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .landing-container {
+                padding: 1rem;
+            }
+
+            .exam-title {
+                font-size: 2rem;
+            }
+
+            .metadata-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .students-table {
+                font-size: 0.875rem;
+            }
+
+            .students-table th,
+            .students-table td {
+                padding: 0.75rem 0.5rem;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+</head>
+<body>
+    <div class="landing-container">
+        <div class="header">
+            <button class="back-btn" onclick="goBack()">
+                <i class="fas fa-arrow-left"></i>
+            </button>
+            <h1 class="exam-title" id="examTitle">Loading...</h1>
+            <button class="theme-toggle-btn" id="themeToggle">
+                <div class="theme-icons">
+                    <span class="theme-icon light material-symbols-outlined">light_mode</span>
+                    <span class="theme-icon dark material-symbols-outlined">dark_mode</span>
+                </div>
+            </button>
+        </div>
+
+        <div class="exam-info-section">
+            <h2 class="section-title">Exam Information</h2>
+            <div class="metadata-grid">
+                <!-- Core Exam Metadata -->
+                <div class="metadata-card core">
+                    <div class="card-header">
+                        <i class="fas fa-clipboard-list card-icon"></i>
+                        <h3 class="card-title">Core Exam Metadata</h3>
+                    </div>
+                    <div class="metadata-item">
+                        <div class="metadata-label">Week Number</div>
+                        <div class="metadata-value" id="weekNumber">Loading...</div>
+                    </div>
+                    <div class="metadata-item">
+                        <div class="metadata-label">Subject</div>
+                        <div class="metadata-value" id="subject">Loading...</div>
+                    </div>
+                    <div class="metadata-item">
+                        <div class="metadata-label">Duration</div>
+                        <div class="metadata-value" id="duration">Loading...</div>
+                    </div>
+                    <div class="metadata-item">
+                        <div class="metadata-label">Total Marks</div>
+                        <div class="metadata-value" id="totalMarks">Loading...</div>
+                    </div>
+                    <div class="metadata-item">
+                        <div class="metadata-label">Fee</div>
+                        <div class="metadata-value" id="fee">Loading...</div>
+                    </div>
+                </div>
+
+                <!-- Scheduling & Availability -->
+                <div class="metadata-card scheduling">
+                    <div class="card-header">
+                        <i class="fas fa-calendar-alt card-icon"></i>
+                        <h3 class="card-title">Scheduling & Availability</h3>
+                    </div>
+                    <div class="metadata-item">
+                        <div class="metadata-label">Scheduled At</div>
+                        <div class="metadata-value" id="scheduledAt">Loading...</div>
+                    </div>
+                    <div class="metadata-item">
+                        <div class="metadata-label">Available From</div>
+                        <div class="metadata-value" id="availableFrom">Loading...</div>
+                    </div>
+                    <div class="metadata-item">
+                        <div class="metadata-label">Available Until</div>
+                        <div class="metadata-value" id="availableUntil">Loading...</div>
+                    </div>
+                    <div class="metadata-item">
+                        <div class="metadata-label">Submit Deadline</div>
+                        <div class="metadata-value" id="submitDeadline">Loading...</div>
+                    </div>
+                </div>
+
+                <!-- Miscellaneous -->
+                <div class="metadata-card miscellaneous">
+                    <div class="card-header">
+                        <i class="fas fa-tags card-icon"></i>
+                        <h3 class="card-title">Miscellaneous</h3>
+                    </div>
+                    <div class="metadata-item">
+                        <div class="metadata-label">Difficulty Level</div>
+                        <div class="metadata-value" id="difficultyLevel">Loading...</div>
+                    </div>
+                    <div class="metadata-item">
+                        <div class="metadata-label">Language</div>
+                        <div class="metadata-value" id="language">Loading...</div>
+                    </div>
+                    <div class="metadata-item">
+                        <div class="metadata-label">Question Count</div>
+                        <div class="metadata-value" id="questionCount">Loading...</div>
+                    </div>
+                    <div class="metadata-item">
+                        <div class="metadata-label">Tags</div>
+                        <div class="metadata-value" id="tags">Loading...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="students-section">
+            <h2 class="students-title">My Students</h2>
+            <table class="students-table">
+                <thead>
+                    <tr>
+                        <th>My Student</th>
+                        <th>Week <span id="weekNumberTable">-</span> Enrollment</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="studentsTableBody">
+                    <!-- Students will be loaded here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../js/supabase-config.js"></script>
+    <script src="../js/api/user.js"></script>
+    <script src="../js/api/exam.js"></script>
+    <script src="../js/api/proctor.js"></script>
+    <script src="../js/api/evaluation.js"></script>
+    <script src="../js/api/payment.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/backend-init.js"></script>
+    <script src="../js/theme.js"></script>
+    <script>
+        let currentUser = null;
+        let currentExam = null;
+        let students = [];
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Wait for backend to be ready
+            await window.waitForBackend();
+
+            // Check authentication
+            const user = await window.authManager.getCurrentUser();
+            if (!user) {
+                window.location.href = '../auth/login.html';
+                return;
+            }
+
+            if (user.profile.role !== 'parent') {
+                window.location.href = '../auth/login.html';
+                return;
+            }
+
+            currentUser = user;
+
+            // Load exam details and students
+            await loadExamDetails();
+            await loadStudents();
+        });
+
+        async function loadExamDetails() {
+            try {
+                console.log('Loading exam details for parent landing...');
+
+                // Get current/latest exam
+                const examResult = await window.examAPI.getCurrentExam();
+                console.log('Parent landing exam result:', examResult);
+
+                if (examResult.success && examResult.data) {
+                    currentExam = examResult.data;
+                } else {
+                    const allExamsResult = await window.examAPI.getAllExams();
+                    if (allExamsResult.success && allExamsResult.data && allExamsResult.data.length > 0) {
+                        const sortedExams = allExamsResult.data.sort((a, b) => b.week_number - a.week_number);
+                        currentExam = sortedExams[0];
+                    } else {
+                        alert('No active exams found. Please check back later.');
+                        return;
+                    }
+                }
+
+                if (currentExam) {
+                    // Populate exam metadata
+                    document.getElementById('examTitle').textContent = currentExam.title || 'iCup Exam';
+                    document.getElementById('weekNumber').textContent = currentExam.week_number || 'N/A';
+                    document.getElementById('weekNumberTable').textContent = currentExam.week_number || '-';
+                    document.getElementById('subject').textContent = Array.isArray(currentExam.subject) ? currentExam.subject.join(', ') : currentExam.subject || 'N/A';
+                    document.getElementById('duration').textContent = `${currentExam.duration_minutes || 0} minutes`;
+                    document.getElementById('totalMarks').textContent = currentExam.total_marks || 'N/A';
+                    document.getElementById('fee').textContent = `${currentExam.fee || 0} TK`;
+
+                    // Format dates
+                    document.getElementById('scheduledAt').textContent = formatDateTime(currentExam.scheduled_at);
+                    document.getElementById('availableFrom').textContent = formatDateTime(currentExam.available_from);
+                    document.getElementById('availableUntil').textContent = formatDateTime(currentExam.available_until);
+                    document.getElementById('submitDeadline').textContent = formatDateTime(currentExam.submit_deadline);
+
+                    document.getElementById('difficultyLevel').textContent = currentExam.difficulty_level || 'N/A';
+                    document.getElementById('language').textContent = currentExam.language || 'N/A';
+                    document.getElementById('questionCount').textContent = currentExam.question_count || 'N/A';
+                    document.getElementById('tags').textContent = Array.isArray(currentExam.tags) ? currentExam.tags.join(', ') : currentExam.tags || 'N/A';
+                } else {
+                    alert('Failed to load exam details. Please try again.');
+                }
+            } catch (error) {
+                console.error('Error loading exam details:', error);
+                alert('Failed to load exam details. Please try again.');
+            }
+        }
+
+        async function loadStudents() {
+            try {
+                console.log('Loading parent students...');
+
+                // Get parent's children from additional info
+                const { data: parentInfo, error } = await window.supabaseClient
+                    .from('parent_additional_info')
+                    .select('students')
+                    .eq('user_id', currentUser.user.id)
+                    .single();
+
+                if (error && error.code !== 'PGRST116') {
+                    throw error;
+                }
+
+                const studentIds = parentInfo?.students || [];
+                console.log('Parent student IDs:', studentIds);
+
+                if (studentIds.length === 0) {
+                    document.getElementById('studentsTableBody').innerHTML = `
+                        <tr>
+                            <td colspan="3" style="text-align: center; padding: 2rem; color: var(--text-secondary);">
+                                No children registered yet
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+
+                // Get student details
+                const { data: studentsData, error: studentsError } = await window.supabaseClient
+                    .from('user_information')
+                    .select('user_id, full_name, email')
+                    .in('user_id', studentIds);
+
+                if (studentsError) {
+                    throw studentsError;
+                }
+
+                students = studentsData || [];
+
+                // Check enrollment status for each student
+                const enrollmentPromises = students.map(async (student) => {
+                    try {
+                        const { data: enrollment, error } = await window.supabaseClient
+                            .from('enrollment_requests')
+                            .select('status')
+                            .eq('student_user_id', student.user_id)
+                            .eq('exam_id', currentExam.exam_id)
+                            .eq('status', 'approved')
+                            .single();
+
+                        return {
+                            ...student,
+                            isEnrolled: !error && enrollment
+                        };
+                    } catch (error) {
+                        return {
+                            ...student,
+                            isEnrolled: false
+                        };
+                    }
+                });
+
+                const studentsWithEnrollment = await Promise.all(enrollmentPromises);
+
+                // Render students table
+                document.getElementById('studentsTableBody').innerHTML = studentsWithEnrollment.map(student => `
+                    <tr>
+                        <td>${student.full_name}</td>
+                        <td>
+                            <div class="enrollment-status">
+                                ${student.isEnrolled 
+                                    ? '<span class="status-enrolled"><i class="fas fa-check-circle"></i> Enrolled</span>'
+                                    : '<span class="status-not-enrolled"><i class="fas fa-times-circle"></i> Not Enrolled</span>'
+                                }
+                            </div>
+                        </td>
+                        <td>
+                            ${!student.isEnrolled 
+                                ? `<button class="enroll-btn" onclick="enrollStudent('${student.user_id}', '${student.full_name}')">Enroll</button>`
+                                : ''
+                            }
+                        </td>
+                    </tr>
+                `).join('');
+
+            } catch (error) {
+                console.error('Error loading students:', error);
+                document.getElementById('studentsTableBody').innerHTML = `
+                    <tr>
+                        <td colspan="3" style="text-align: center; padding: 2rem; color: var(--red-primary);">
+                            Error loading students
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+
+        function enrollStudent(studentId, studentName) {
+            // Redirect to parent payment page with student information
+            window.location.href = `parent-icup-payment.html?studentId=${encodeURIComponent(studentId)}&studentName=${encodeURIComponent(studentName)}`;
+        }
+
+        function formatDateTime(dateString) {
+            if (!dateString) return 'N/A';
+            const date = new Date(dateString);
+            return date.toLocaleString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        function goBack() {
+            window.location.href = '../dashboards/parent-dashboard.html';
+        }
+    </script>
+</body>
+</html>

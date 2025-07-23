@@ -1,0 +1,16 @@
+After Evaluation Management System section, there will be  a "Evaluation Allocation" Section where the admin decide which tutor evaluates which Answer-sets. One Evaluator can Evaluate only his/her preferred subjects but he/she can evaluate multiple answer-set. Let's say 30 students have participated the icup exam. Their answer papers are uploaded into Answer-set table. We'll build evaluation page. Where those 30 students' answer papers will be evaluated. When a evaluator ( a tutor who is eligible for evaluation, check in evaluation eligibility table) enters the evaluation page, only his preferred Subjects' pictures will be there to evaluate. [There will draw tools to overlay on the picture ] Now Let's say he's preferred subjects are physics and math and there are 5 tutors in total who have Physics in common, 6 tutors who have math in common, so every physics evaluator will be assigned to evaluate 6 student's physics answer  papers, and every math evaluator will be assigned to evaluate 5 student's math answer  papers. 
+
+We need build evaluation page (and a way for evaluation eligibile tutor to go there) and RLS policies if needed. But that is task-2 
+
+Task-1 is to build the "Evaluation Allocation" section. Who gets which answer-sets for evaluation. 
+
+There will be tables for each subjects. (so for Exam that has Phy+Che+Math there will be 3 tables and so on) Column1 → Evaluator Name. Column2 → Assigned Answer-sets [List]. List items are draggable to anywhere inside the table. Column3→ Status (whether or not the tutor got his own student's Answer paper). Column 4→ Unassigned Answer-papers 
+
+There will  be a random mix button, A submit button. 
+
+Random Mix button → Evenly spreads the answer papers between evaluators (if there's remainder in the division, just keep it in the 4th column, the admin will drag and drop it)
+
+Submit→ Saves the Evaluator Allocation to the database (YEP! You need to build another table and RLS policies for admin to read & modify and tutor to read it) and then use this information in the evaluation page. 
+
+
+START WITH TASK-1. then after you finish we will move onto Task-2

@@ -1,0 +1,340 @@
+` tags.
+
+```
+<replit_final_file>
+/* Material Symbols font variation settings */
+.material-symbols-outlined {
+  font-variation-settings:
+  'FILL' 0,
+  'wght' 400,
+  'GRAD' 0,
+  'opsz' 24;
+}
+
+/* CSS Custom Properties for Theme System */
+:root {
+  /* Light theme colors (default) */
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8fafc;
+  --text-primary: #0f172a;
+  --text-secondary: #64748b;
+  --text-muted: #94a3b8;
+  --border-color: #e2e8f0;
+  --blue-primary: #3b82f6;
+  --blue-gradient: linear-gradient(135deg, #3b82f6, #1e40af);
+  --blue-gradient-hover: linear-gradient(135deg, #2563eb, #1e3a8a);
+  --accent-primary: #3b82f6;
+  --accent-secondary: #1e40af;
+  --green-primary: #10b981;
+  --red-primary: #ef4444;
+  --orange-primary: #f59e0b;
+  --purple-primary: #8b5cf6;
+  --surface-color: #ffffff;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+}
+
+/* Dark theme colors */
+[data-theme="dark"],
+body[data-theme="dark"] {
+  --bg-primary: #0f172a !important;
+  --bg-secondary: #1e293b !important;
+  --text-primary: #f1f5f9 !important;
+  --text-secondary: #94a3b8 !important;
+  --text-muted: #64748b !important;
+  --border-color: #334155 !important;
+  --blue-primary: #60a5fa !important;
+  --blue-gradient: linear-gradient(135deg, #60a5fa, #3b82f6) !important;
+  --blue-gradient-hover: linear-gradient(135deg, #3b82f6, #2563eb) !important;
+  --accent-primary: #60a5fa !important;
+  --accent-secondary: #3b82f6 !important;
+  --green-primary: #34d399 !important;
+  --red-primary: #f87171 !important;
+  --orange-primary: #fbbf24 !important;
+  --purple-primary: #a78bfa !important;
+  --surface-color: #1e293b !important;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.4) !important;
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* Apply theme colors to body and html */
+html,
+body {
+  background-color: var(--bg-primary) !important;
+  color: var(--text-primary) !important;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Force dark theme styles */
+[data-theme="dark"] *,
+body[data-theme="dark"] * {
+  border-color: var(--border-color) !important;
+}
+
+[data-theme="dark"] .dashboard-container,
+body[data-theme="dark"] .dashboard-container {
+  background: var(--bg-primary) !important;
+  color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .dashboard-header,
+body[data-theme="dark"] .dashboard-header {
+  background: var(--bg-primary) !important;
+  border-bottom-color: var(--border-color) !important;
+  color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .dashboard-main,
+body[data-theme="dark"] .dashboard-main {
+  background: var(--bg-primary) !important;
+  color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .action-card,
+body[data-theme="dark"] .action-card {
+  background: var(--bg-secondary) !important;
+  border-color: var(--border-color) !important;
+  color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .student-card,
+body[data-theme="dark"] .student-card {
+  background: var(--bg-secondary) !important;
+  border-color: var(--border-color) !important;
+  color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .proctoring-card,
+body[data-theme="dark"] .proctoring-card {
+  background: rgba(30, 41, 59, 0.8) !important;
+  border-color: var(--border-color) !important;
+  color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] #proctorAssignmentSection,
+body[data-theme="dark"] #proctorAssignmentSection {
+  background: linear-gradient(135deg, 
+    rgba(15, 23, 42, 0.95) 0%, 
+    rgba(30, 41, 59, 0.9) 50%,
+    rgba(15, 23, 42, 0.95) 100%) !important;
+  border-color: rgba(59, 130, 246, 0.3) !important;
+}
+
+/* Theme Toggle Button Styles */
+.theme-toggle-btn {
+  position: relative;
+  width: 48px;
+  height: 48px;
+  background: transparent;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  box-shadow: none;
+}
+
+.theme-toggle-btn:hover {
+  background: var(--blue-primary) !important;
+  color: white !important;
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.theme-toggle-btn:hover .theme-icon {
+  color: white !important;
+}
+
+.theme-toggle-btn:active {
+  transform: scale(0.95);
+}
+
+.theme-toggle-btn:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+
+/* Icons container */
+.theme-icons {
+  position: relative;
+  width: 24px;
+  height: 24px;
+}
+
+.theme-icon {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 24px;
+  height: 24px;
+  font-size: 24px;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  opacity: 0;
+  visibility: hidden;
+  transform: rotate(180deg) scale(0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Light theme - show dark icon */
+[data-theme="light"] .theme-icon.dark,
+body[data-theme="light"] .theme-icon.dark {
+  opacity: 1 !important;
+  visibility: visible !important;
+  transform: rotate(0deg) scale(1) !important;
+  color: var(--text-primary) !important;
+}
+
+[data-theme="light"] .theme-icon.light,
+body[data-theme="light"] .theme-icon.light {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  transform: rotate(180deg) scale(0.5) !important;
+}
+
+/* Dark theme - show light icon */
+[data-theme="dark"] .theme-icon.light,
+body[data-theme="dark"] .theme-icon.light {
+  opacity: 1 !important;
+  visibility: visible !important;
+  transform: rotate(0deg) scale(1) !important;
+  color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .theme-icon.dark,
+body[data-theme="dark"] .theme-icon.dark {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  transform: rotate(180deg) scale(0.5) !important;
+}
+
+/* Text colors for dark theme */
+[data-theme="dark"] h1,
+[data-theme="dark"] h2,
+[data-theme="dark"] h3,
+[data-theme="dark"] h4,
+[data-theme="dark"] h5,
+[data-theme="dark"] h6,
+body[data-theme="dark"] h1,
+body[data-theme="dark"] h2,
+body[data-theme="dark"] h3,
+body[data-theme="dark"] h4,
+body[data-theme="dark"] h5,
+body[data-theme="dark"] h6 {
+  color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] p,
+[data-theme="dark"] span,
+[data-theme="dark"] div,
+body[data-theme="dark"] p,
+body[data-theme="dark"] span,
+body[data-theme="dark"] div {
+  color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .text-secondary,
+body[data-theme="dark"] .text-secondary {
+  color: var(--text-secondary) !important;
+}
+
+[data-theme="dark"] .text-muted,
+body[data-theme="dark"] .text-muted {
+  color: var(--text-muted) !important;
+}
+
+/* Button styles for dark theme */
+[data-theme="dark"] .btn-primary,
+body[data-theme="dark"] .btn-primary {
+  background: var(--blue-gradient) !important;
+  color: white !important;
+  border-color: var(--blue-primary) !important;
+}
+
+[data-theme="dark"] .logout-btn,
+body[data-theme="dark"] .logout-btn {
+  background: var(--red-primary) !important;
+  color: white !important;
+}
+
+[data-theme="dark"] .notification-btn,
+body[data-theme="dark"] .notification-btn {
+  background: var(--bg-secondary) !important;
+  border-color: var(--border-color) !important;
+  color: var(--text-primary) !important;
+}
+
+/* Form elements for dark theme */
+[data-theme="dark"] input,
+[data-theme="dark"] select,
+[data-theme="dark"] textarea,
+body[data-theme="dark"] input,
+body[data-theme="dark"] select,
+body[data-theme="dark"] textarea {
+  background: var(--bg-secondary) !important;
+  border-color: var(--border-color) !important;
+  color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] input::placeholder,
+body[data-theme="dark"] input::placeholder {
+  color: var(--text-muted) !important;
+}
+
+/* Modal styles for dark theme */
+[data-theme="dark"] .modal-content,
+body[data-theme="dark"] .modal-content {
+  background: var(--bg-primary) !important;
+  border-color: var(--border-color) !important;
+  color: var(--text-primary) !important;
+}
+
+/* Scrollbar for dark theme */
+[data-theme="dark"] ::-webkit-scrollbar {
+  width: 8px;
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-thumb {
+  background: var(--blue-gradient);
+  border-radius: 4px;
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-thumb:hover {
+  background: var(--blue-gradient-hover);
+}
+
+/* Transitions for smooth theme switching */
+* {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+/* Reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+/* Debug styles - remove in production */
+[data-theme="dark"] {
+  outline: 1px solid red !important;
+}
+
+body[data-theme="dark"] {
+  outline: 2px solid blue !important;
+}

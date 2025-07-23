@@ -1,0 +1,337 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - iScore</title>
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/theme.css">
+    <link rel="stylesheet" href="../css/responsive.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="profile-container">
+        <header class="profile-header">
+            <button class="back-btn" onclick="goBack()">
+                <i class="fas fa-arrow-left"></i> Back
+            </button>
+            <h1>Profile</h1>
+            <button class="theme-toggle-btn" id="themeToggle">
+                <i class="fas fa-sun theme-icon light-icon"></i>
+                <i class="fas fa-moon theme-icon dark-icon"></i>
+            </button>
+        </header>
+
+        <main class="profile-main">
+            <div class="profile-section">
+                <div class="profile-picture-section">
+                    <div class="profile-picture-large" id="profilePictureLarge">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <button class="change-picture-btn" onclick="changeProfilePicture()">
+                        <i class="fas fa-camera"></i> Change Picture
+                    </button>
+                    <input type="file" id="profilePictureInput" accept="image/*" style="display: none;">
+                </div>
+
+                <div class="profile-info">
+                    <div class="info-group">
+                        <label>Full Name</label>
+                        <input type="text" id="fullName" readonly>
+                    </div>
+                    
+                    <div class="info-group">
+                        <label>Username</label>
+                        <input type="text" id="username" readonly>
+                    </div>
+                    
+                    <div class="info-group">
+                        <label>Email</label>
+                        <input type="email" id="email" readonly>
+                    </div>
+                    
+                    <div class="info-group">
+                        <label>Phone</label>
+                        <input type="tel" id="phone">
+                    </div>
+                    
+                    <div class="info-group">
+                        <label>Role</label>
+                        <input type="text" id="role" readonly>
+                    </div>
+                    
+                    <div class="info-group">
+                        <label>Bio</label>
+                        <textarea id="bio" rows="3"></textarea>
+                    </div>
+                </div>
+
+                <div class="profile-actions">
+                    <button class="btn btn-primary" onclick="updateProfile()">
+                        <i class="fas fa-save"></i> Update Profile
+                    </button>
+                    <button class="btn btn-secondary" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../js/supabase-config.js"></script>
+    <script src="../js/api/user.js"></script>
+    <script src="../js/api/exam.js"></script>
+    <script src="../js/api/proctor.js"></script>
+    <script src="../js/api/evaluation.js"></script>
+    <script src="../js/api/payment.js"></script>
+    <script src="../js/backend-init.js"></script>
+    <script src="../js/upload.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/theme.js"></script>
+    <script>
+        let currentUser = null;
+
+        // Load user profile
+        async function loadProfile() {
+            try {
+                // Wait for backend to be ready
+                await window.waitForBackend();
+                
+                // Get current user from backend service
+                currentUser = await window.backendService.getCurrentUser();
+                
+                if (!currentUser) {
+                    window.location.href = '../auth/login.html';
+                    return;
+                }
+
+                const profile = currentUser.profile;
+                
+                // Populate form fields
+                document.getElementById('fullName').value = profile.full_name || '';
+                document.getElementById('username').value = profile.username || '';
+                document.getElementById('email').value = profile.email || '';
+                document.getElementById('phone').value = profile.phone || '';
+                document.getElementById('role').value = profile.role || '';
+                document.getElementById('bio').value = profile.bio || '';
+
+                // Update profile picture
+                const profilePicEl = document.getElementById('profilePictureLarge');
+                if (profile.profile_picture) {
+                    profilePicEl.innerHTML = `<img src="${profile.profile_picture}" alt="Profile" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`;
+                }
+            } catch (error) {
+                console.error('Error loading profile:', error);
+            }
+        }
+
+        // Change profile picture
+        function changeProfilePicture() {
+            document.getElementById('profilePictureInput').click();
+        }
+
+        // Handle profile picture change
+        document.getElementById('profilePictureInput').addEventListener('change', async function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            try {
+                // Show loading state
+                const profilePicEl = document.getElementById('profilePictureLarge');
+                profilePicEl.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+
+                // Wait for backend to be ready
+                await window.waitForBackend();
+                
+                // Create a new uploader instance to ensure proper initialization
+                const uploader = new ImageUploader();
+                
+                // Upload new image
+                const imageUrl = await uploader.uploadImage(file, 'uploads', 'profile-pictures');
+                
+                // Update profile with new image
+                const result = await window.userAPI.updateUserProfile(currentUser.user.id, {
+                    profile_picture: imageUrl
+                });
+
+                if (result.success) {
+                    // Update UI
+                    profilePicEl.innerHTML = `<img src="${imageUrl}" alt="Profile" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`;
+                    alert('Profile picture updated successfully!');
+                } else {
+                    throw new Error(result.error);
+                }
+            } catch (error) {
+                console.error('Error updating profile picture:', error);
+                alert('Failed to update profile picture. Please try again.');
+                // Restore original image
+                loadProfile();
+            }
+        });
+
+        // Update profile
+        async function updateProfile() {
+            try {
+                const updates = {
+                    phone: document.getElementById('phone').value,
+                    bio: document.getElementById('bio').value
+                };
+
+                const result = await window.userAPI.updateUserProfile(currentUser.user.id, updates);
+                
+                if (result.success) {
+                    alert('Profile updated successfully!');
+                } else {
+                    throw new Error(result.error);
+                }
+            } catch (error) {
+                console.error('Error updating profile:', error);
+                alert('Failed to update profile. Please try again.');
+            }
+        }
+
+        // Logout
+        async function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                if (window.authManager) {
+                    window.authManager.logout();
+                } else {
+                    // Fallback method
+                    try {
+                        const result = await window.userAPI.logoutUser();
+                        if (result.success) {
+                            localStorage.clear();
+                            window.location.href = '../auth/login.html';
+                        }
+                    } catch (error) {
+                        localStorage.clear();
+                        window.location.href = '../auth/login.html';
+                    }
+                }
+            }
+        }
+
+        // Go back
+        function goBack() {
+            history.back();
+        }
+
+        // Load profile when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            // Wait for backend to be ready before loading profile
+            window.waitForBackend().then(() => {
+                loadProfile();
+            });
+        });
+    </script>
+
+    <style>
+        .profile-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .profile-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .back-btn {
+            background: none;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+            color: var(--text-color);
+        }
+
+        .profile-picture-section {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .profile-picture-large {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            margin: 0 auto 15px;
+            background: var(--card-bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 60px;
+            color: var(--text-secondary);
+            overflow: hidden;
+        }
+
+        .change-picture-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .info-group {
+            margin-bottom: 20px;
+        }
+
+        .info-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        .info-group input,
+        .info-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background: var(--card-bg);
+            color: var(--text-color);
+            font-size: 16px;
+        }
+
+        .info-group input[readonly] {
+            background: var(--bg-secondary);
+            cursor: not-allowed;
+        }
+
+        .profile-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: var(--error-color);
+            color: white;
+        }
+    </style>
+</body>
+</html>

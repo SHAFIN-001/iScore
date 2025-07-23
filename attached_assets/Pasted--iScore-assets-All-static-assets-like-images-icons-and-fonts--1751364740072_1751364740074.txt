@@ -1,0 +1,87 @@
+/iScore
+│
+├── 📁 assets/                       # All static assets like images, icons, and fonts
+│   ├── 📁 images/                   # Placeholder or local preview images
+│   ├── 📁 fonts/                    # Custom fonts (e.g., Copernicus)
+│   └── 📁 icons/                    # SVG or PNG icons
+│
+├── 📁 auth/                         # User authentication pages
+│   ├── login.html                  # Login form for all roles
+│   ├── register.html               # Registration with role-specific forms
+│   ├── forgot-password.html        # Password reset
+│   └── verify-email.html           # Email verification status
+│
+├── 📁 dashboards/                  # Main dashboards for each role
+│   ├── student-dashboard.html
+│   ├── tutor-dashboard.html
+│   ├── parent-dashboard.html
+│   ├── admin-dashboard.html
+│   └── leaderboard.html            # Publicly visible leaderboard page
+│
+├── 📁 dashboards-sections/         # All subpages belonging to dashboards
+│   ├── student/
+│   │   ├── exam-page.html          # iCup participation page
+│   │   ├── notifications.html
+│   │   └── payment.html
+│   │
+│   ├── tutor/
+│   │   ├── proctor-upload.html     # Upload student's answer sheets
+│   │   ├── evaluation.html         # Evaluate answer sheets
+│   │   ├── notifications.html
+│   │   └── student-setup.html
+│   │
+│   ├── admin/
+│   │   ├── icup-settings.html
+│   │   ├── proctoring.html
+│   │   ├── evaluation-allocation.html
+│   │   ├── result-announcement.html
+│   │   └── notifications.html
+│
+├── 📁 pages/
+│   ├── index.html                  # Landing page
+│   ├── profile.html                # Shared profile page
+│   ├── answer-evaluation.html      # Main evaluator interface (drawing + marks)
+│   └── not-found.html              # 404 or redirect fallback
+│
+├── 📁 css/
+│   ├── main.css                    # Core layout and utility styles
+│   ├── theme.css                   # Theme animation and dark/light mode
+│   └── responsive.css              # Mobile/tablet responsiveness
+│
+├── 📁 js/
+│   ├── auth.js                     # Handles login/registration logic
+│   ├── theme.js                    # Theme switching logic
+│   ├── supabase-config.js          # Supabase project credentials
+│   ├── utils.js                    # Helper functions
+│   ├── routing.js                  # Redirects based on user role
+│   ├── timer.js                    # Countdown timers for exams
+│   ├── upload.js                   # Handles image uploads
+│   ├── exam.js                     # Exam logic (enrollment, submission)
+│   ├── dashboard.js                # Generic dashboard controller
+│   └── 📁 api/                     # Supabase queries
+│       ├── user.js
+│       ├── exam.js
+│       ├── payment.js
+│       ├── proctor.js
+│       └── evaluation.js
+│
+├── 📁 data/                         # Static JSON/JS objects (used instead of DB sometimes)
+│   ├── address.js                  # Districts + Upazilas
+│   ├── districts.js
+│   ├── subjects.js
+│   └── syllabus.js
+│
+├── 📁 components/                  # Reusable UI blocks
+│   ├── header.html
+│   ├── footer.html
+│   ├── sidebar.html
+│   ├── modal.html
+│   ├── countdown.html
+│   └── loader.html
+│
+├── 📁 uploads/                     # Temp storage for previewing uploads
+│
+├── 📁 buckets/                     # Placeholder paths for Supabase bucket files
+│
+├── index.html                      # Root redirect or entry point
+└── README.md
