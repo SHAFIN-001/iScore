@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leaderboard - iScore</title>
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/theme.css">
+    <link rel="stylesheet" href="../css/responsive.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .leaderboard-container {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 1rem;
+        }
+
+        .leaderboard-header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .leaderboard-header h1 {
+            color: #1a1a2e;
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .filters-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .filters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            align-items: end;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .filter-group label {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .filter-group select {
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+        }
+
+        .refresh-btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            background: #667eea;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .refresh-btn:hover {
+            background: #5a6fd8;
+            transform: translateY(-2px);
+        }
+
+        .leaderboard-content {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .podium {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 3rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .podium-position {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 16px;
+            padding: 1.5rem;
+            text-align: center;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .podium-position:hover {
+            transform: translateY(-5px);
+        }
+
+        .podium-position.first {
+            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+            order: 2;
+            transform: scale(1.1);
+        }
+
+        .podium-position.second {
+            background: linear-gradient(135deg, #c0c0c0 0%, #e8e8e8 100%);
+            order: 1;
+        }
+
+        .podium-position.third {
+            background: linear-gradient(135deg, #cd7f32 0%, #daa357 100%);
+            order: 3;
+        }
+
+        .podium-rank {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.2rem;
+            margin: 0 auto 1rem;
+        }
+
+        .podium-name {
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .podium-score {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #333;
+        }
+
+        .podium-class {
+            font-size: 0.9rem;
+            color: #666;
+            margin-top: 0.5rem;
+        }
+
+        .rankings-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 2rem;
+        }
+
+        .rankings-table th,
+        .rankings-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .rankings-table th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #333;
+            position: sticky;
+            top: 0;
+        }
+
+        .rankings-table tr:hover {
+            background: rgba(102, 126, 234, 0.05);
+        }
+
+        .rank-cell {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: #667eea;
+        }
+
+        .rank-badge {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #667eea;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            margin-right: 0.5rem;
+        }
+
+        .rank-badge.gold { background: #ffd700; color: #333; }
+        .rank-badge.silver { background: #c0c0c0; color: #333; }
+        .rank-badge.bronze { background: #cd7f32; color: white; }
+
+        .student-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .student-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+
+        .student-details h4 {
+            margin: 0;
+            font-weight: 600;
+        }
+
+        .student-details p {
+            margin: 0;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .score-breakdown {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .subject-score {
+            background: #e9ecef;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .subject-score.physics { background: #e3f2fd; color: #1976d2; }
+        .subject-score.chemistry { background: #f3e5f5; color: #7b1fa2; }
+        .subject-score.math { background: #e8f5e8; color: #388e3c; }
+        .subject-score.biology { background: #fff3e0; color: #f57c00; }
+
+        .total-score {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #333;
+        }
+
+        .loading-state {
+            text-align: center;
+            padding: 3rem;
+            color: #666;
+        }
+
+        .loading-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: #667eea;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #666;
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            color: #ccc;
+        }
+
+        @media (max-width: 768px) {
+            .leaderboard-container {
+                padding: 0.5rem;
+            }
+
+            .podium {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .podium-position {
+                order: unset !important;
+                transform: none !important;
+            }
+
+            .podium-position.first {
+                transform: none !important;
+            }
+
+            .rankings-table {
+                font-size: 0.9rem;
+            }
+
+            .rankings-table th,
+            .rankings-table td {
+                padding: 0.5rem;
+            }
+
+            .score-breakdown {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="leaderboard-container">
+        <!-- Header -->
+        <div class="leaderboard-header">
+            <h1><i class="fas fa-trophy"></i> Current Week Leaderboard</h1>
+            <p>Rankings based on total evaluation scores across all subjects</p>
+        </div>
+
+        <!-- Filters -->
+        <div class="filters-section">
+            <div class="filters-grid">
+                <div class="filter-group">
+                    <label for="classFilter">Filter by Class:</label>
+                    <select id="classFilter">
+                        <option value="">All Classes</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="viewType">View Type:</label>
+                    <select id="viewType">
+                        <option value="overall">Overall Rankings</option>
+                        <option value="class">Class Rankings</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <button class="refresh-btn" id="refreshData">
+                        <i class="fas fa-sync-alt"></i> Refresh Data
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading State -->
+        <div id="loadingState" class="loading-state">
+            <i class="fas fa-spinner fa-spin"></i>
+            <h3>Loading Leaderboard...</h3>
+            <p>Please wait while we fetch the latest rankings</p>
+        </div>
+
+        <!-- Leaderboard Content -->
+        <div id="leaderboardContent" class="leaderboard-content" style="display: none;">
+            <!-- Top 3 Podium -->
+            <div id="podium" class="podium">
+                <!-- Podium positions will be loaded here -->
+            </div>
+
+            <!-- Rankings Table -->
+            <div class="table-container">
+                <table class="rankings-table">
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>Student</th>
+                            <th>Class</th>
+                            <th>Subject Scores</th>
+                            <th>Total Score</th>
+                        </tr>
+                    </thead>
+                    <tbody id="rankingsTableBody">
+                        <!-- Rankings will be loaded here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Empty State -->
+        <div id="emptyState" class="empty-state" style="display: none;">
+            <i class="fas fa-chart-line"></i>
+            <h3>No Rankings Available</h3>
+            <p>No evaluation results found for the current week.</p>
+        </div>
+    </div>
+
+    <!-- Include required JavaScript files -->
+    <script src="../js/supabase-config.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/backend-init.js"></script>
+
+    <script>
+        // Global variables
+        let currentUser = null;
+        let leaderboardData = [];
+        let filteredData = [];
+        let availableClasses = [];
+
+        // Initialize the leaderboard page
+        async function initializeLeaderboard() {
+            try {
+                await window.waitForBackend();
+                
+                currentUser = await window.backendService.getCurrentUser();
+                if (!currentUser) {
+                    window.location.href = '../auth/login.html';
+                    return;
+                }
+
+                await loadLeaderboardData();
+
+            } catch (error) {
+                console.error('Error initializing leaderboard:', error);
+                showError('Failed to initialize leaderboard. Please refresh and try again.');
+            }
+        }
+
+        // Load leaderboard data
+        async function loadLeaderboardData() {
+            try {
+                document.getElementById('loadingState').style.display = 'block';
+                document.getElementById('leaderboardContent').style.display = 'none';
+                document.getElementById('emptyState').style.display = 'none';
+
+                // Get leaderboard data from the view
+                const { data, error } = await window.supabaseClient
+                    .from('current_week_leaderboard')
+                    .select('*');
+
+                if (error) throw error;
+
+                leaderboardData = data || [];
+                
+                if (leaderboardData.length === 0) {
+                    document.getElementById('loadingState').style.display = 'none';
+                    document.getElementById('emptyState').style.display = 'block';
+                    return;
+                }
+
+                // Extract available classes
+                availableClasses = [...new Set(leaderboardData.map(item => item.class_level))].sort();
+                
+                // Update class filter
+                updateClassFilter();
+                
+                // Apply initial filter
+                applyFilters();
+                
+                // Display leaderboard
+                displayLeaderboard();
+
+                document.getElementById('loadingState').style.display = 'none';
+                document.getElementById('leaderboardContent').style.display = 'block';
+
+            } catch (error) {
+                console.error('Error loading leaderboard data:', error);
+                showError('Failed to load leaderboard data.');
+            }
+        }
+
+        // Update class filter options
+        function updateClassFilter() {
+            const classFilter = document.getElementById('classFilter');
+            
+            // Clear existing options except "All Classes"
+            classFilter.innerHTML = '<option value="">All Classes</option>';
+            
+            // Add class options
+            availableClasses.forEach(className => {
+                const option = document.createElement('option');
+                option.value = className;
+                option.textContent = className;
+                classFilter.appendChild(option);
+            });
+        }
+
+        // Apply filters
+        function applyFilters() {
+            const classFilter = document.getElementById('classFilter').value;
+            const viewType = document.getElementById('viewType').value;
+
+            filteredData = leaderboardData.filter(item => {
+                return !classFilter || item.class_level === classFilter;
+            });
+
+            // Sort based on view type
+            if (viewType === 'class') {
+                filteredData.sort((a, b) => {
+                    if (a.class_level !== b.class_level) {
+                        return a.class_level.localeCompare(b.class_level);
+                    }
+                    return a.class_rank - b.class_rank;
+                });
+            } else {
+                filteredData.sort((a, b) => a.overall_rank - b.overall_rank);
+            }
+        }
+
+        // Display leaderboard
+        function displayLeaderboard() {
+            displayPodium();
+            displayRankingsTable();
+        }
+
+        // Display top 3 podium
+        function displayPodium() {
+            const podium = document.getElementById('podium');
+            podium.innerHTML = '';
+
+            const top3 = filteredData.slice(0, 3);
+
+            top3.forEach((student, index) => {
+                const position = index + 1;
+                const positionClass = position === 1 ? 'first' : position === 2 ? 'second' : 'third';
+                
+                const podiumPosition = document.createElement('div');
+                podiumPosition.className = `podium-position ${positionClass}`;
+                
+                podiumPosition.innerHTML = `
+                    <div class="podium-rank">${position}</div>
+                    <div class="podium-name">${student.full_name}</div>
+                    <div class="podium-score">${student.total_score} pts</div>
+                    <div class="podium-class">${student.class_level}</div>
+                `;
+                
+                podium.appendChild(podiumPosition);
+            });
+        }
+
+        // Display rankings table
+        function displayRankingsTable() {
+            const tbody = document.getElementById('rankingsTableBody');
+            tbody.innerHTML = '';
+
+            filteredData.forEach((student, index) => {
+                const viewType = document.getElementById('viewType').value;
+                const rank = viewType === 'class' ? student.class_rank : student.overall_rank;
+                const actualPosition = index + 1;
+
+                const row = document.createElement('tr');
+                
+                // Rank badge
+                const rankBadgeClass = rank === 1 ? 'gold' : rank === 2 ? 'silver' : rank === 3 ? 'bronze' : '';
+                
+                // Subject scores
+                const subjectScoresHtml = student.subject_scores.map(score => 
+                    `<span class="subject-score ${score.subject}">${score.subject}: ${score.marks}</span>`
+                ).join('');
+
+                row.innerHTML = `
+                    <td class="rank-cell">
+                        <div style="display: flex; align-items: center;">
+                            <div class="rank-badge ${rankBadgeClass}">${rank}</div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="student-info">
+                            <div class="student-avatar">
+                                ${student.full_name.charAt(0)}
+                            </div>
+                            <div class="student-details">
+                                <h4>${student.full_name}</h4>
+                                <p>${student.subjects_evaluated} subjects evaluated</p>
+                            </div>
+                        </div>
+                    </td>
+                    <td>${student.class_level}</td>
+                    <td>
+                        <div class="score-breakdown">
+                            ${subjectScoresHtml}
+                        </div>
+                    </td>
+                    <td>
+                        <div class="total-score">${student.total_score} pts</div>
+                    </td>
+                `;
+
+                tbody.appendChild(row);
+            });
+        }
+
+        // Error handling
+        function showError(message) {
+            document.getElementById('loadingState').innerHTML = `
+                <i class="fas fa-exclamation-triangle" style="font-size: 3rem; color: #dc3545; margin-bottom: 1rem;"></i>
+                <h3>Error</h3>
+                <p>${message}</p>
+                <button onclick="window.location.reload()" style="margin-top: 1rem; padding: 0.5rem 1rem; background: #667eea; color: white; border: none; border-radius: 8px; cursor: pointer;">
+                    Try Again
+                </button>
+            `;
+        }
+
+        // Event listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            // Filter change handlers
+            document.getElementById('classFilter').addEventListener('change', function() {
+                applyFilters();
+                displayLeaderboard();
+            });
+
+            document.getElementById('viewType').addEventListener('change', function() {
+                applyFilters();
+                displayLeaderboard();
+            });
+
+            // Refresh button
+            document.getElementById('refreshData').addEventListener('click', loadLeaderboardData);
+
+            // Initialize
+            initializeLeaderboard();
+        });
+    </script>
+</body>
+</html>

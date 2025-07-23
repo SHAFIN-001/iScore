@@ -9,12 +9,11 @@
     <link rel="stylesheet" href="../css/theme.css">
     <link rel="stylesheet" href="../css/responsive.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <!-- Remove lucide since we're using Font Awesome -->
     <style>
         .evaluation-container {
             min-height: 100vh;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            padding: 2rem;
+            padding: 1rem;
         }
 
         .evaluation-header {
@@ -37,21 +36,50 @@
             background-clip: text;
         }
 
-        .evaluation-header p {
-            color: #666;
-            font-size: 1.1rem;
-        }
-
-        .evaluation-content {
+        .subject-selector {
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(20px);
             border-radius: 20px;
             padding: 2rem;
+            margin-bottom: 2rem;
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
         }
 
+        .subject-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .subject-card {
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid rgba(102, 126, 234, 0.2);
+            border-radius: 16px;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .subject-card:hover {
+            border-color: #667eea;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.2);
+        }
+
+        .subject-card.selected {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.1);
+        }
+
         .answer-set-selector {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 2rem;
             margin-bottom: 2rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
         }
 
         .answer-set-grid {
@@ -81,64 +109,138 @@
             background: rgba(102, 126, 234, 0.1);
         }
 
-        .student-info {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            margin-bottom: 1rem;
-        }
-
-        .student-avatar {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: 600;
-        }
-
-        .evaluation-form {
+        .evaluation-workspace {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
             display: none;
-            margin-top: 2rem;
         }
 
-        .question-section {
-            background: rgba(255, 255, 255, 0.8);
-            border-radius: 12px;
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
-            border: 1px solid rgba(102, 126, 234, 0.2);
-        }
-
-        .question-header {
+        .toolbar {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 1rem;
-        }
-
-        .question-number {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
-            font-weight: 600;
-        }
-
-        .question-marks {
-            color: #666;
-            font-weight: 500;
-        }
-
-        .student-answer {
             background: #f8f9fa;
-            border-radius: 8px;
             padding: 1rem;
+            border-radius: 10px;
             margin-bottom: 1rem;
-            border-left: 4px solid #667eea;
+            gap: 1rem;
+        }
+
+        .drawing-tools {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .tool-btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 8px;
+            background: #667eea;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .tool-btn:hover {
+            background: #5a6fd8;
+            transform: translateY(-2px);
+        }
+
+        .tool-btn.active {
+            background: #4c63d2;
+            box-shadow: 0 4px 15px rgba(76, 99, 210, 0.4);
+        }
+
+        .navigation-controls {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .nav-btn {
+            padding: 0.5rem;
+            border: none;
+            border-radius: 8px;
+            background: #6c757d;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn:hover:not(:disabled) {
+            background: #5a6268;
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .image-viewer {
+            position: relative;
+            background: #f8f9fa;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            overflow: hidden;
+            min-height: 600px;
+        }
+
+        .image-container {
+            position: relative;
+            width: 100%;
+            height: 600px;
+            overflow: auto;
+        }
+
+        .answer-image {
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .annotation-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            pointer-events: auto;
+            cursor: crosshair;
+        }
+
+        .zoom-controls {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .zoom-btn {
+            padding: 0.5rem;
+            border: none;
+            border-radius: 8px;
+            background: #28a745;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .zoom-btn:hover {
+            background: #218838;
+        }
+
+        .evaluation-form {
+            background: #f8f9fa;
+            padding: 2rem;
+            border-radius: 10px;
+            margin-top: 2rem;
+        }
+
+        .marks-section {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
         }
 
         .marks-input {
@@ -148,59 +250,63 @@
         }
 
         .marks-input input {
-            width: 80px;
             padding: 0.5rem;
-            border: 2px solid #ddd;
+            border: 1px solid #ddd;
             border-radius: 8px;
-            text-align: center;
-            font-size: 1rem;
-            font-weight: 600;
+            width: 100px;
         }
 
-        .marks-input input:focus {
-            outline: none;
-            border-color: #667eea;
+        .comments-section {
+            margin-top: 1rem;
         }
 
-        .submit-evaluation-btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            padding: 1rem 2rem;
-            border-radius: 12px;
-            font-size: 1.1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
+        .comments-section textarea {
             width: 100%;
+            min-height: 100px;
+            padding: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            resize: vertical;
+        }
+
+        .submit-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid #ddd;
         }
 
-        .submit-evaluation-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
-        }
-
-        .back-btn {
-            background: rgba(255, 255, 255, 0.9);
-            color: #667eea;
-            border: 2px solid #667eea;
-            padding: 0.75rem 1.5rem;
-            border-radius: 12px;
+        .submit-btn {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 8px;
+            background: #28a745;
+            color: white;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            margin-bottom: 2rem;
         }
 
-        .back-btn:hover {
-            background: #667eea;
-            color: white;
+        .submit-btn:hover {
+            background: #218838;
             transform: translateY(-2px);
+        }
+
+        .save-progress-btn {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 8px;
+            background: #ffc107;
+            color: #212529;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .save-progress-btn:hover {
+            background: #e0a800;
         }
 
         .loading-state {
@@ -209,316 +315,800 @@
             color: #666;
         }
 
-        .loading-spinner {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #667eea;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 1rem;
+        .loading-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: #667eea;
         }
 
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        .image-info {
+            background: #e9ecef;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .anonymous-id {
+            font-family: 'Courier New', monospace;
+            background: #667eea;
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        .color-picker {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .color-option {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 2px solid #fff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .color-option.active {
+            transform: scale(1.2);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+
+        .red { background-color: #dc3545; }
+        .blue { background-color: #007bff; }
+
+        .progress-indicator {
+            text-align: center;
+            margin: 1rem 0;
+            font-weight: 600;
+            color: #667eea;
+        }
+
+        @media (max-width: 768px) {
+            .evaluation-container {
+                padding: 0.5rem;
+            }
+            
+            .toolbar {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .drawing-tools, .navigation-controls, .zoom-controls {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .image-container {
+                height: 400px;
+            }
         }
     </style>
 </head>
+
 <body>
     <div class="evaluation-container">
-        <a href="../dashboards/tutor-dashboard.html" class="back-btn">
-            <i class="fas fa-arrow-left"></i>
-            Back to Dashboard
-        </a>
-
+        <!-- Header -->
         <div class="evaluation-header">
-            <h1><i class="fas fa-clipboard-check"></i> Answer Evaluation</h1>
-            <p>Evaluate student answer sets for the current iCup exam</p>
+            <h1><i class="fas fa-clipboard-check"></i> Answer Evaluation System</h1>
+            <p>Evaluate student answer sheets with precision and maintain anonymity</p>
         </div>
 
-        <div class="evaluation-content">
-            <div id="loadingState" class="loading-state">
-                <div class="loading-spinner"></div>
-                <p>Loading your evaluation assignments...</p>
-            </div>
+        <!-- Loading State -->
+        <div id="loadingState" class="loading-state">
+            <i class="fas fa-spinner fa-spin"></i>
+            <h3>Loading Evaluation System...</h3>
+            <p>Please wait while we load your assigned evaluations</p>
+        </div>
 
-            <div id="noAssignments" class="loading-state" style="display: none;">
-                <i class="fas fa-inbox" style="font-size: 3rem; color: #ccc; margin-bottom: 1rem;"></i>
-                <h3>No Evaluation Assignments</h3>
-                <p>You don't have any answer sets assigned for evaluation at the moment.</p>
+        <!-- Subject Selector -->
+        <div id="subjectSelector" class="subject-selector" style="display: none;">
+            <h2><i class="fas fa-book"></i> Select Subject to Evaluate</h2>
+            <div id="subjectGrid" class="subject-grid">
+                <!-- Subjects will be loaded dynamically -->
             </div>
+        </div>
 
-            <div id="answerSetSelector" class="answer-set-selector" style="display: none;">
-                <h3>Select an Answer Set to Evaluate</h3>
-                <div id="answerSetGrid" class="answer-set-grid">
-                    <!-- Answer sets will be loaded here -->
+        <!-- Answer Set Selector -->
+        <div id="answerSetSelector" class="answer-set-selector" style="display: none;">
+            <h2><i class="fas fa-file-alt"></i> Select Answer Set to Evaluate</h2>
+            <p class="text-muted">Choose an answer set to begin evaluation. Student identities are kept anonymous.</p>
+            <div id="answerSetGrid" class="answer-set-grid">
+                <!-- Answer sets will be loaded dynamically -->
+            </div>
+        </div>
+
+        <!-- Evaluation Workspace -->
+        <div id="evaluationWorkspace" class="evaluation-workspace">
+            <!-- Toolbar -->
+            <div class="toolbar">
+                <div class="drawing-tools">
+                    <div class="color-picker">
+                        <span>Pen Color:</span>
+                        <div class="color-option red active" data-color="#dc3545"></div>
+                        <div class="color-option blue" data-color="#007bff"></div>
+                    </div>
+                    <button class="tool-btn active" id="penTool" data-tool="pen">
+                        <i class="fas fa-pen"></i> Pen
+                    </button>
+                    <button class="tool-btn" id="eraserTool" data-tool="eraser">
+                        <i class="fas fa-eraser"></i> Eraser
+                    </button>
+                    <button class="tool-btn" id="clearAllTool" data-tool="clear">
+                        <i class="fas fa-trash"></i> Clear All
+                    </button>
+                </div>
+
+                <div class="navigation-controls">
+                    <button class="nav-btn" id="prevImage">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <span id="imageCounter" class="progress-indicator">1 / 1</span>
+                    <button class="nav-btn" id="nextImage">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+
+                <div class="zoom-controls">
+                    <button class="zoom-btn" id="zoomOut">
+                        <i class="fas fa-search-minus"></i>
+                    </button>
+                    <span id="zoomLevel">100%</span>
+                    <button class="zoom-btn" id="zoomIn">
+                        <i class="fas fa-search-plus"></i>
+                    </button>
+                    <button class="zoom-btn" id="resetZoom">
+                        <i class="fas fa-expand"></i>
+                    </button>
                 </div>
             </div>
 
-            <div id="evaluationForm" class="evaluation-form">
-                <h3 id="evaluationTitle">Evaluating: Student Name</h3>
-                <div id="questionsContainer">
-                    <!-- Questions will be loaded here -->
+            <!-- Image Info -->
+            <div class="image-info">
+                <div>
+                    <strong>Answer Set ID:</strong> 
+                    <span class="anonymous-id" id="currentAnswerSetId">Loading...</span>
                 </div>
-                <button id="submitEvaluation" class="submit-evaluation-btn">
-                    <i class="fas fa-check"></i> Submit Evaluation
-                </button>
+                <div>
+                    <strong>Subject:</strong> 
+                    <span id="currentSubject">Loading...</span>
+                </div>
+            </div>
+
+            <!-- Image Viewer -->
+            <div class="image-viewer">
+                <div class="image-container" id="imageContainer">
+                    <img id="answerImage" class="answer-image" src="" alt="Answer Sheet">
+                    <svg id="annotationCanvas" class="annotation-canvas"></svg>
+                </div>
+            </div>
+
+            <!-- Evaluation Form -->
+            <div class="evaluation-form">
+                <div class="marks-section">
+                    <h3><i class="fas fa-calculator"></i> Total Marks for this Subject</h3>
+                    <div class="marks-input">
+                        <label for="totalMarks">Total Marks:</label>
+                        <input type="number" id="totalMarks" min="0" max="100" step="0.5" placeholder="0">
+                        <span>/ <span id="maxMarks">100</span></span>
+                    </div>
+                </div>
+
+                <div class="comments-section">
+                    <h3><i class="fas fa-comment"></i> Comments & Feedback</h3>
+                    <textarea id="evaluationComments" placeholder="Enter your comments and feedback for this evaluation..."></textarea>
+                </div>
+
+                <div class="submit-section">
+                    <button class="save-progress-btn" id="saveProgress">
+                        <i class="fas fa-save"></i> Save Progress
+                    </button>
+                    <button class="submit-btn" id="submitEvaluation">
+                        <i class="fas fa-check"></i> Submit Final Evaluation
+                    </button>
+                </div>
             </div>
         </div>
     </div>
 
+    <!-- Include required JavaScript files -->
     <script src="../js/supabase-config.js"></script>
-    <script src="../js/api/user.js"></script>
-    <script src="../js/api/exam.js"></script>
-    <script src="../js/api/evaluation.js"></script>
+    <script src="../js/auth.js"></script>
     <script src="../js/backend-init.js"></script>
+
     <script>
+        // Global variables
         let currentUser = null;
         let currentExam = null;
+        let eligibleSubjects = [];
+        let selectedSubject = null;
         let answerSets = [];
         let selectedAnswerSet = null;
+        let currentImageIndex = 0;
+        let currentImages = [];
+        let annotations = {};
+        let currentTool = 'pen';
+        let currentColor = '#dc3545';
+        let zoomLevel = 1;
+        let isDrawing = false;
+        let drawingPath = null;
 
+        // Initialize the evaluation page
         async function initializeEvaluationPage() {
             try {
                 await window.waitForBackend();
-
-                // Get current user
-                const { data: { session }, error } = await window.supabaseClient.auth.getSession();
-                if (error || !session || !session.user) {
+                
+                currentUser = await window.backendService.getCurrentUser();
+                if (!currentUser) {
                     window.location.href = '../auth/login.html';
                     return;
                 }
 
-                const userResult = await window.userAPI.getCurrentUser();
-                if (!userResult || userResult.profile.role !== 'tutor') {
-                    alert('Access denied. Only tutors can access this page.');
-                    window.location.href = '../dashboards/tutor-dashboard.html';
+                // Check if user is an evaluator
+                const { data: eligibility, error } = await window.supabaseClient
+                    .from('evaluator_eligibility')
+                    .select('*')
+                    .eq('tutor_id', currentUser.user.id)
+                    .eq('enabled', true)
+                    .single();
+
+                if (error || !eligibility) {
+                    showError('You are not authorized to access the evaluation system. Please contact an administrator.');
                     return;
                 }
 
-                currentUser = userResult;
-
-                // Get current exam
-                const examResult = await window.examAPI.getCurrentExam();
-                if (!examResult.success || !examResult.data) {
-                    showError('No current exam available for evaluation.');
-                    return;
-                }
-
-                currentExam = examResult.data;
-
-                // Load evaluation assignments
-                await loadEvaluationAssignments();
+                eligibleSubjects = eligibility.preferred_subjects || [];
+                await loadCurrentExam();
+                await loadSubjects();
 
             } catch (error) {
                 console.error('Error initializing evaluation page:', error);
-                showError('Failed to initialize evaluation page.');
+                showError('Failed to initialize evaluation system. Please refresh and try again.');
             }
         }
 
-        async function loadEvaluationAssignments() {
+        // Load current exam
+        async function loadCurrentExam() {
             try {
-                const userId = currentUser.user.id || currentUser.user.user_id;
-
-                // Get assignments from evaluator_allocation table
-                const { data: assignments, error } = await window.supabaseClient
-                    .from('evaluator_allocation')
+                const { data: exams, error } = await window.supabaseClient
+                    .from('icup_exam_metadata')
                     .select('*')
-                    .eq('evaluator_id', userId)
-                    .eq('exam_id', currentExam.exam_id);
+                    .eq('is_archived', false)
+                    .order('created_at', { ascending: false })
+                    .limit(1);
 
                 if (error) throw error;
 
-                console.log('Evaluation assignments:', assignments);
-
-                if (!assignments || assignments.length === 0) {
-                    document.getElementById('loadingState').style.display = 'none';
-                    document.getElementById('noAssignments').style.display = 'block';
+                if (!exams || exams.length === 0) {
+                    showError('No active exam found.');
                     return;
                 }
 
-                // Get answer sets for all assignments
-                const allAnswerSetIds = [];
-                assignments.forEach(assignment => {
-                    if (assignment.assigned_answer_sets) {
-                        allAnswerSetIds.push(...assignment.assigned_answer_sets);
-                    }
+                currentExam = exams[0];
+            } catch (error) {
+                console.error('Error loading current exam:', error);
+                showError('Failed to load exam information.');
+            }
+        }
+
+        // Load eligible subjects
+        async function loadSubjects() {
+            try {
+                document.getElementById('loadingState').style.display = 'none';
+                document.getElementById('subjectSelector').style.display = 'block';
+
+                const subjectGrid = document.getElementById('subjectGrid');
+                subjectGrid.innerHTML = '';
+
+                eligibleSubjects.forEach(subject => {
+                    const subjectCard = document.createElement('div');
+                    subjectCard.className = 'subject-card';
+                    subjectCard.dataset.subject = subject;
+                    subjectCard.innerHTML = `
+                        <h3><i class="fas fa-book"></i> ${subject.charAt(0).toUpperCase() + subject.slice(1)}</h3>
+                        <p>Click to evaluate ${subject} papers</p>
+                    `;
+                    subjectCard.addEventListener('click', () => selectSubject(subject));
+                    subjectGrid.appendChild(subjectCard);
                 });
 
-                if (allAnswerSetIds.length === 0) {
-                    document.getElementById('loadingState').style.display = 'none';
-                    document.getElementById('noAssignments').style.display = 'block';
+            } catch (error) {
+                console.error('Error loading subjects:', error);
+                showError('Failed to load subjects.');
+            }
+        }
+
+        // Select subject and load answer sets
+        async function selectSubject(subject) {
+            try {
+                selectedSubject = subject;
+                
+                // Update UI
+                document.querySelectorAll('.subject-card').forEach(card => {
+                    card.classList.remove('selected');
+                });
+                document.querySelector(`[data-subject="${subject}"]`).classList.add('selected');
+
+                // Load assigned answer sets for this subject
+                await loadAnswerSets();
+
+            } catch (error) {
+                console.error('Error selecting subject:', error);
+                showError('Failed to load answer sets for selected subject.');
+            }
+        }
+
+        // Load answer sets assigned to evaluator
+        async function loadAnswerSets() {
+            try {
+                if (!selectedSubject || !currentExam) return;
+
+                // Get evaluator allocation for this subject and exam
+                const { data: allocation, error: allocationError } = await window.supabaseClient
+                    .from('evaluator_allocation')
+                    .select('assigned_answer_sets')
+                    .eq('evaluator_id', currentUser.user.id)
+                    .eq('exam_id', currentExam.exam_id)
+                    .eq('subject', selectedSubject)
+                    .single();
+
+                if (allocationError || !allocation || !allocation.assigned_answer_sets) {
+                    showError('No answer sets assigned to you for this subject.');
                     return;
                 }
 
-                // Fetch answer sets details
-                const { data: answerSetsData, error: answerError } = await window.supabaseClient
+                // Get answer sets details
+                const { data: sets, error: setsError } = await window.supabaseClient
                     .from('answer_sets')
-                    .select(`
-                        *,
-                        user_information!answer_sets_student_id_fkey (
-                            full_name,
-                            profile_picture
-                        )
-                    `)
-                    .in('answer_set_id', allAnswerSetIds);
+                    .select('*')
+                    .in('id', allocation.assigned_answer_sets);
 
-                if (answerError) throw answerError;
+                if (setsError) throw setsError;
 
-                answerSets = answerSetsData || [];
+                answerSets = sets || [];
+                await displayAnswerSets();
 
-                // Check which ones are already evaluated
-                for (let answerSet of answerSets) {
+            } catch (error) {
+                console.error('Error loading answer sets:', error);
+                showError('Failed to load assigned answer sets.');
+            }
+        }
+
+        // Display answer sets for selection
+        async function displayAnswerSets() {
+            try {
+                document.getElementById('subjectSelector').style.display = 'none';
+                document.getElementById('answerSetSelector').style.display = 'block';
+
+                const answerSetGrid = document.getElementById('answerSetGrid');
+                answerSetGrid.innerHTML = '';
+
+                for (const answerSet of answerSets) {
+                    // Check if already evaluated
                     const { data: evaluation } = await window.supabaseClient
                         .from('answer_evaluation')
                         .select('*')
-                        .eq('answer_set_id', answerSet.answer_set_id)
+                        .eq('answer_set_id', answerSet.id)
+                        .eq('subject', selectedSubject)
                         .single();
 
-                    answerSet.evaluated = !!evaluation;
-                    answerSet.evaluation = evaluation;
-                }
+                    const isEvaluated = evaluation && evaluation.status === 'completed';
 
-                displayAnswerSets();
+                    const answerSetCard = document.createElement('div');
+                    answerSetCard.className = `answer-set-card ${isEvaluated ? 'evaluated' : ''}`;
+                    answerSetCard.dataset.answerSetId = answerSet.id;
+                    
+                    const imageCount = answerSet[`${selectedSubject}_images`]?.length || 0;
+                    
+                    answerSetCard.innerHTML = `
+                        <div style="display: flex; justify-content: between; align-items: center; margin-bottom: 1rem;">
+                            <div>
+                                <h4>Answer Set: ${answerSet.id.substring(0, 8)}...</h4>
+                                <p style="color: #666; margin: 0;">Subject: ${selectedSubject}</p>
+                                <p style="color: #666; margin: 0; font-size: 0.9rem;">
+                                    Images: ${imageCount}
+                                </p>
+                            </div>
+                            <div>
+                                ${isEvaluated 
+                                    ? '<span style="color: #28a745; font-weight: 600;"><i class="fas fa-check-circle"></i> Evaluated</span>'
+                                    : evaluation 
+                                        ? '<span style="color: #ffc107; font-weight: 600;"><i class="fas fa-clock"></i> In Progress</span>'
+                                        : '<span style="color: #dc3545; font-weight: 600;"><i class="fas fa-exclamation-circle"></i> Pending</span>'
+                                }
+                            </div>
+                        </div>
+                    `;
+
+                    if (!isEvaluated) {
+                        answerSetCard.addEventListener('click', () => selectAnswerSet(answerSet.id));
+                        answerSetCard.style.cursor = 'pointer';
+                    } else {
+                        answerSetCard.style.opacity = '0.6';
+                        answerSetCard.style.cursor = 'not-allowed';
+                    }
+
+                    answerSetGrid.appendChild(answerSetCard);
+                }
 
             } catch (error) {
-                console.error('Error loading evaluation assignments:', error);
-                showError('Failed to load evaluation assignments.');
+                console.error('Error displaying answer sets:', error);
+                showError('Failed to display answer sets.');
             }
         }
 
-        function displayAnswerSets() {
-            document.getElementById('loadingState').style.display = 'none';
-            document.getElementById('answerSetSelector').style.display = 'block';
-
-            const grid = document.getElementById('answerSetGrid');
-            grid.innerHTML = answerSets.map(answerSet => `
-                <div class="answer-set-card" onclick="selectAnswerSet('${answerSet.answer_set_id}')">
-                    <div class="student-info">
-                        <div class="student-avatar">
-                            ${answerSet.user_information?.profile_picture 
-                                ? `<img src="${answerSet.user_information.profile_picture}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;" alt="Student">` 
-                                : (answerSet.user_information?.full_name?.charAt(0) || 'S')
-                            }
-                        </div>
-                        <div>
-                            <h4>${answerSet.user_information?.full_name || 'Unknown Student'}</h4>
-                            <p style="color: #666; margin: 0;">Subject: ${answerSet.subject}</p>
-                            <p style="color: #666; margin: 0; font-size: 0.9rem;">
-                                Submitted: ${new Date(answerSet.submission_timestamp).toLocaleString()}
-                            </p>
-                        </div>
-                    </div>
-                    <div style="display: flex; justify-content: between; align-items: center;">
-                        <span style="color: #667eea; font-weight: 600;">
-                            ID: ${answerSet.answer_set_id.substring(0, 8)}...
-                        </span>
-                        ${answerSet.evaluated 
-                            ? '<span style="color: #28a745; font-weight: 600;"><i class="fas fa-check-circle"></i> Evaluated</span>'
-                            : '<span style="color: #ffc107; font-weight: 600;"><i class="fas fa-clock"></i> Pending</span>'
-                        }
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function selectAnswerSet(answerSetId) {
-            selectedAnswerSet = answerSets.find(as => as.answer_set_id === answerSetId);
-            if (!selectedAnswerSet) return;
-
-            document.getElementById('answerSetSelector').style.display = 'none';
-            document.getElementById('evaluationTitle').textContent = 
-                `Evaluating: ${selectedAnswerSet.user_information?.full_name || 'Unknown Student'} - ${selectedAnswerSet.subject}`;
-
-            loadEvaluationForm();
-        }
-
-        function loadEvaluationForm() {
-            const questionsContainer = document.getElementById('questionsContainer');
-            
-            // Get question marks from current exam
-            const questionMarks = currentExam.question_marks || {};
-            const totalQuestions = currentExam.question_count || 10;
-
-            let questionsHTML = '';
-            for (let i = 1; i <= totalQuestions; i++) {
-                const maxMarks = questionMarks[i.toString()] || 10;
-                const currentMarks = selectedAnswerSet.evaluation?.question_marks?.[i.toString()] || '';
-
-                questionsHTML += `
-                    <div class="question-section">
-                        <div class="question-header">
-                            <div class="question-number">Question ${i}</div>
-                            <div class="question-marks">Max: ${maxMarks} marks</div>
-                        </div>
-                        <div class="student-answer">
-                            <strong>Student's Answer:</strong>
-                            <p>${selectedAnswerSet.answers?.[i.toString()] || 'No answer provided'}</p>
-                        </div>
-                        <div class="marks-input">
-                            <label>Marks:</label>
-                            <input 
-                                type="number" 
-                                id="marks_${i}" 
-                                min="0" 
-                                max="${maxMarks}" 
-                                step="0.5"
-                                value="${currentMarks}"
-                                placeholder="0"
-                            >
-                            <span>/ ${maxMarks}</span>
-                        </div>
-                    </div>
-                `;
-            }
-
-            questionsContainer.innerHTML = questionsHTML;
-            document.getElementById('evaluationForm').style.display = 'block';
-        }
-
-        async function submitEvaluation() {
+        // Select answer set for evaluation
+        async function selectAnswerSet(answerSetId) {
             try {
+                selectedAnswerSet = answerSets.find(set => set.id === answerSetId);
                 if (!selectedAnswerSet) return;
 
-                // Collect marks
-                const questionMarks = {};
-                let totalMarks = 0;
-                const maxTotalMarks = currentExam.total_marks || 100;
+                // Load existing evaluation if any
+                const { data: existingEvaluation } = await window.supabaseClient
+                    .from('answer_evaluation')
+                    .select('*')
+                    .eq('answer_set_id', answerSetId)
+                    .eq('subject', selectedSubject)
+                    .single();
 
-                const totalQuestions = currentExam.question_count || 10;
-                for (let i = 1; i <= totalQuestions; i++) {
-                    const marksInput = document.getElementById(`marks_${i}`);
-                    const marks = parseFloat(marksInput.value) || 0;
-                    questionMarks[i.toString()] = marks;
-                    totalMarks += marks;
+                if (existingEvaluation && existingEvaluation.status === 'completed') {
+                    alert('This answer set has already been evaluated and submitted.');
+                    return;
                 }
 
-                // Submit evaluation
+                // Load images and annotations
+                currentImages = selectedAnswerSet[`${selectedSubject}_images`] || [];
+                if (currentImages.length === 0) {
+                    alert('No images found for this answer set.');
+                    return;
+                }
+
+                currentImageIndex = 0;
+                annotations = existingEvaluation?.evaluated_pictures || {};
+
+                // Pre-fill form if evaluation in progress
+                if (existingEvaluation) {
+                    document.getElementById('totalMarks').value = existingEvaluation.total_marks || '';
+                    document.getElementById('evaluationComments').value = existingEvaluation.detailed_marks || '';
+                }
+
+                // Show evaluation workspace
+                document.getElementById('answerSetSelector').style.display = 'none';
+                document.getElementById('evaluationWorkspace').style.display = 'block';
+
+                await loadEvaluationWorkspace();
+
+            } catch (error) {
+                console.error('Error selecting answer set:', error);
+                showError('Failed to load answer set for evaluation.');
+            }
+        }
+
+        // Load evaluation workspace
+        async function loadEvaluationWorkspace() {
+            try {
+                // Update UI elements
+                document.getElementById('currentAnswerSetId').textContent = selectedAnswerSet.id.substring(0, 8) + '...';
+                document.getElementById('currentSubject').textContent = selectedSubject;
+                
+                // Load first image
+                await loadImage(0);
+                
+                // Setup drawing canvas
+                setupDrawingCanvas();
+                
+                // Update navigation
+                updateNavigation();
+
+            } catch (error) {
+                console.error('Error loading evaluation workspace:', error);
+                showError('Failed to setup evaluation workspace.');
+            }
+        }
+
+        // Load image and annotations
+        async function loadImage(index) {
+            try {
+                if (index < 0 || index >= currentImages.length) return;
+
+                currentImageIndex = index;
+                const imageUrl = currentImages[index];
+
+                const img = document.getElementById('answerImage');
+                img.onload = function() {
+                    // Reset zoom
+                    zoomLevel = 1;
+                    updateZoom();
+                    
+                    // Load annotations for this image
+                    loadAnnotationsForImage(index);
+                };
+                
+                img.src = imageUrl;
+                updateNavigation();
+
+            } catch (error) {
+                console.error('Error loading image:', error);
+                showError('Failed to load image.');
+            }
+        }
+
+        // Setup drawing canvas
+        function setupDrawingCanvas() {
+            const canvas = document.getElementById('annotationCanvas');
+            const imageContainer = document.getElementById('imageContainer');
+
+            // Resize canvas to match image container
+            function resizeCanvas() {
+                const rect = imageContainer.getBoundingClientRect();
+                canvas.setAttribute('width', rect.width);
+                canvas.setAttribute('height', rect.height);
+                canvas.style.width = rect.width + 'px';
+                canvas.style.height = rect.height + 'px';
+            }
+
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
+
+            // Drawing event listeners
+            canvas.addEventListener('mousedown', startDrawing);
+            canvas.addEventListener('mousemove', draw);
+            canvas.addEventListener('mouseup', stopDrawing);
+            canvas.addEventListener('mouseout', stopDrawing);
+
+            // Touch events for mobile
+            canvas.addEventListener('touchstart', handleTouch);
+            canvas.addEventListener('touchmove', handleTouch);
+            canvas.addEventListener('touchend', stopDrawing);
+        }
+
+        // Drawing functions
+        function startDrawing(e) {
+            if (currentTool === 'pen') {
+                isDrawing = true;
+                const rect = e.target.getBoundingClientRect();
+                const x = (e.clientX - rect.left) / zoomLevel;
+                const y = (e.clientY - rect.top) / zoomLevel;
+                
+                drawingPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                drawingPath.setAttribute('stroke', currentColor);
+                drawingPath.setAttribute('stroke-width', '2');
+                drawingPath.setAttribute('fill', 'none');
+                drawingPath.setAttribute('d', `M${x},${y}`);
+                
+                document.getElementById('annotationCanvas').appendChild(drawingPath);
+            }
+        }
+
+        function draw(e) {
+            if (!isDrawing || currentTool !== 'pen') return;
+            
+            const rect = e.target.getBoundingClientRect();
+            const x = (e.clientX - rect.left) / zoomLevel;
+            const y = (e.clientY - rect.top) / zoomLevel;
+            
+            const currentPath = drawingPath.getAttribute('d');
+            drawingPath.setAttribute('d', currentPath + ` L${x},${y}`);
+        }
+
+        function stopDrawing() {
+            if (isDrawing) {
+                isDrawing = false;
+                if (drawingPath) {
+                    saveAnnotation();
+                    drawingPath = null;
+                }
+            }
+        }
+
+        function handleTouch(e) {
+            e.preventDefault();
+            const touch = e.touches[0];
+            const mouseEvent = new MouseEvent(e.type === 'touchstart' ? 'mousedown' : 
+                                            e.type === 'touchmove' ? 'mousemove' : 'mouseup', {
+                clientX: touch.clientX,
+                clientY: touch.clientY
+            });
+            e.target.dispatchEvent(mouseEvent);
+        }
+
+        // Save annotation to memory
+        function saveAnnotation() {
+            const imageKey = `image_${currentImageIndex}`;
+            if (!annotations[imageKey]) {
+                annotations[imageKey] = [];
+            }
+            
+            const annotationData = {
+                type: 'path',
+                data: drawingPath.getAttribute('d'),
+                color: drawingPath.getAttribute('stroke'),
+                strokeWidth: drawingPath.getAttribute('stroke-width'),
+                timestamp: new Date().toISOString()
+            };
+            
+            annotations[imageKey].push(annotationData);
+        }
+
+        // Load annotations for current image
+        function loadAnnotationsForImage(index) {
+            const canvas = document.getElementById('annotationCanvas');
+            
+            // Clear existing annotations
+            while (canvas.firstChild) {
+                canvas.removeChild(canvas.firstChild);
+            }
+            
+            const imageKey = `image_${index}`;
+            const imageAnnotations = annotations[imageKey] || [];
+            
+            imageAnnotations.forEach(annotation => {
+                if (annotation.type === 'path') {
+                    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                    path.setAttribute('stroke', annotation.color);
+                    path.setAttribute('stroke-width', annotation.strokeWidth);
+                    path.setAttribute('fill', 'none');
+                    path.setAttribute('d', annotation.data);
+                    canvas.appendChild(path);
+                }
+            });
+        }
+
+        // Tool functions
+        function selectTool(tool) {
+            currentTool = tool;
+            
+            // Update UI
+            document.querySelectorAll('.tool-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`[data-tool="${tool}"]`).classList.add('active');
+            
+            // Update cursor
+            const canvas = document.getElementById('annotationCanvas');
+            if (tool === 'pen') {
+                canvas.style.cursor = 'crosshair';
+            } else if (tool === 'eraser') {
+                canvas.style.cursor = 'grab';
+            }
+        }
+
+        function selectColor(color) {
+            currentColor = color;
+            
+            // Update UI
+            document.querySelectorAll('.color-option').forEach(option => {
+                option.classList.remove('active');
+            });
+            document.querySelector(`[data-color="${color}"]`).classList.add('active');
+        }
+
+        function clearAllAnnotations() {
+            if (confirm('Are you sure you want to clear all annotations for this image?')) {
+                const canvas = document.getElementById('annotationCanvas');
+                while (canvas.firstChild) {
+                    canvas.removeChild(canvas.firstChild);
+                }
+                
+                const imageKey = `image_${currentImageIndex}`;
+                annotations[imageKey] = [];
+            }
+        }
+
+        // Navigation functions
+        function navigateImage(direction) {
+            const newIndex = currentImageIndex + direction;
+            if (newIndex >= 0 && newIndex < currentImages.length) {
+                loadImage(newIndex);
+            }
+        }
+
+        function updateNavigation() {
+            document.getElementById('imageCounter').textContent = `${currentImageIndex + 1} / ${currentImages.length}`;
+            document.getElementById('prevImage').disabled = currentImageIndex === 0;
+            document.getElementById('nextImage').disabled = currentImageIndex === currentImages.length - 1;
+        }
+
+        // Zoom functions
+        function zoomIn() {
+            zoomLevel = Math.min(zoomLevel * 1.2, 3);
+            updateZoom();
+        }
+
+        function zoomOut() {
+            zoomLevel = Math.max(zoomLevel / 1.2, 0.5);
+            updateZoom();
+        }
+
+        function resetZoom() {
+            zoomLevel = 1;
+            updateZoom();
+        }
+
+        function updateZoom() {
+            const img = document.getElementById('answerImage');
+            const canvas = document.getElementById('annotationCanvas');
+            
+            img.style.transform = `scale(${zoomLevel})`;
+            canvas.style.transform = `scale(${zoomLevel})`;
+            
+            document.getElementById('zoomLevel').textContent = Math.round(zoomLevel * 100) + '%';
+        }
+
+        // Save progress
+        async function saveProgress() {
+            try {
+                const totalMarks = parseFloat(document.getElementById('totalMarks').value) || 0;
+                const comments = document.getElementById('evaluationComments').value;
+
                 const evaluationData = {
-                    answer_set_id: selectedAnswerSet.answer_set_id,
-                    evaluator_id: currentUser.user.id || currentUser.user.user_id,
-                    exam_id: currentExam.exam_id,
-                    student_id: selectedAnswerSet.student_id,
-                    subject: selectedAnswerSet.subject,
-                    question_marks: questionMarks,
+                    answer_set_id: selectedAnswerSet.id,
+                    subject: selectedSubject,
                     total_marks: totalMarks,
-                    evaluation_status: 'completed',
-                    evaluated_at: new Date().toISOString()
+                    detailed_marks: comments,
+                    evaluated_pictures: annotations,
+                    status: 'in_progress',
+                    updated_at: new Date().toISOString()
                 };
 
-                const { data, error } = await window.supabaseClient
+                const { error } = await window.supabaseClient
                     .from('answer_evaluation')
-                    .upsert(evaluationData)
-                    .select();
+                    .upsert(evaluationData);
+
+                if (error) throw error;
+
+                alert('Progress saved successfully!');
+
+            } catch (error) {
+                console.error('Error saving progress:', error);
+                alert('Failed to save progress. Please try again.');
+            }
+        }
+
+        // Submit final evaluation
+        async function submitEvaluation() {
+            try {
+                const totalMarks = parseFloat(document.getElementById('totalMarks').value);
+                const comments = document.getElementById('evaluationComments').value;
+
+                if (isNaN(totalMarks) || totalMarks < 0) {
+                    alert('Please enter a valid total marks.');
+                    return;
+                }
+
+                if (!confirm('Are you sure you want to submit this evaluation? You cannot modify it after submission.')) {
+                    return;
+                }
+
+                const evaluationData = {
+                    answer_set_id: selectedAnswerSet.id,
+                    subject: selectedSubject,
+                    total_marks: totalMarks,
+                    detailed_marks: comments,
+                    evaluated_pictures: annotations,
+                    status: 'completed',
+                    submitted_at: new Date().toISOString(),
+                    updated_at: new Date().toISOString()
+                };
+
+                const { error } = await window.supabaseClient
+                    .from('answer_evaluation')
+                    .upsert(evaluationData);
 
                 if (error) throw error;
 
                 alert('Evaluation submitted successfully!');
                 
-                // Go back to answer set selection
-                document.getElementById('evaluationForm').style.display = 'none';
-                await loadEvaluationAssignments();
+                // Return to answer set selection
+                document.getElementById('evaluationWorkspace').style.display = 'none';
+                await displayAnswerSets();
 
             } catch (error) {
                 console.error('Error submitting evaluation:', error);
@@ -526,6 +1116,7 @@
             }
         }
 
+        // Error handling
         function showError(message) {
             document.getElementById('loadingState').innerHTML = `
                 <i class="fas fa-exclamation-triangle" style="font-size: 3rem; color: #dc3545; margin-bottom: 1rem;"></i>
@@ -538,10 +1129,33 @@
         }
 
         // Event listeners
-        document.getElementById('submitEvaluation').addEventListener('click', submitEvaluation);
+        document.addEventListener('DOMContentLoaded', function() {
+            // Tool selection
+            document.getElementById('penTool').addEventListener('click', () => selectTool('pen'));
+            document.getElementById('eraserTool').addEventListener('click', () => selectTool('eraser'));
+            document.getElementById('clearAllTool').addEventListener('click', clearAllAnnotations);
 
-        // Initialize when page loads
-        document.addEventListener('DOMContentLoaded', initializeEvaluationPage);
+            // Color selection
+            document.querySelectorAll('.color-option').forEach(option => {
+                option.addEventListener('click', (e) => selectColor(e.target.dataset.color));
+            });
+
+            // Navigation
+            document.getElementById('prevImage').addEventListener('click', () => navigateImage(-1));
+            document.getElementById('nextImage').addEventListener('click', () => navigateImage(1));
+
+            // Zoom controls
+            document.getElementById('zoomIn').addEventListener('click', zoomIn);
+            document.getElementById('zoomOut').addEventListener('click', zoomOut);
+            document.getElementById('resetZoom').addEventListener('click', resetZoom);
+
+            // Form actions
+            document.getElementById('saveProgress').addEventListener('click', saveProgress);
+            document.getElementById('submitEvaluation').addEventListener('click', submitEvaluation);
+
+            // Initialize
+            initializeEvaluationPage();
+        });
     </script>
 </body>
 </html>
