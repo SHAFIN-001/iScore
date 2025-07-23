@@ -1,0 +1,1114 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parent Dashboard</title>
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/theme.css">
+    <link rel="stylesheet" href="../css/responsive.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .dashboard-container {
+            min-height: 100vh;
+            background: var(--bg-primary);
+        }
+
+        .dashboard-header {
+            background: var(--bg-primary);
+            border-bottom: 1px solid var(--border-color);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .profile-section {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+            transition: background 0.2s;
+        }
+
+        .profile-section:hover {
+            background: var(--bg-secondary);
+        }
+
+        .profile-picture {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--blue-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+
+        .parent-name {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .notification-btn {
+            position: relative;
+            background: transparent;
+            border: 0;
+            padding: 0.75rem;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            color: var(--text-primary);
+            transition: all 0.2s;
+            transform: scale(1);
+        }
+
+        .notification-btn:hover {
+            background: var(--blue-primary);
+            color: white;
+            transform: scale(1.25);
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: transparent;
+            color: green;
+            border-radius: 0%;
+            width: 20px;
+            height: 20px;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .theme-toggle-btn {
+            background: transparent;
+            border: 0;
+            padding: 0rem;
+            border-radius: 50%;
+            cursor: pointer;
+            color: var(--text-primary);
+            transition: all 0.2s;
+        }
+
+        .theme-toggle-btn:hover {
+            background: var(--blue-primary);
+            color: white;
+            transform: scale(1.25);
+        }
+
+        .logout-btn {
+            background: var(--red-primary);
+            color: darkred;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .logout-btn:hover {
+            background: whitesmoke;
+        }
+
+        .dashboard-main {
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .dashboard-welcome {
+            margin-bottom: 2rem;
+        }
+
+        .dashboard-welcome h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .dashboard-welcome p {
+            color: var(--text-secondary);
+            font-size: 1.125rem;
+        }
+
+        .dashboard-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-header h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 0;
+        }
+
+        .btn-primary {
+            background: var(--blue-gradient);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
+        }
+
+        .children-grid, .tutors-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .child-card, .tutor-card {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            transition: all 0.2s;
+        }
+
+        .child-card:hover, .tutor-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+
+        .enrollment-status {
+            margin-top: 0.5rem;
+        }
+
+        .enroll-child-btn {
+            background: var(--blue-primary);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-right: 0.5rem;
+            transition: all 0.2s;
+        }
+
+        .enroll-child-btn:hover {
+            background: var(--blue-dark);
+            transform: translateY(-2px);
+        }
+
+        .child-avatar, .tutor-avatar {
+            width: 60px;
+            height: 60px;
+            background: var(--blue-gradient);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .child-avatar img, .tutor-avatar img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .avatar-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .child-info h4, .tutor-info h4 {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .child-info p, .tutor-info p {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        .child-actions, .tutor-actions {
+            margin-top: 1rem;
+        }
+
+        .btn-secondary {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .btn-secondary:hover {
+            background: var(--blue-primary);
+            color: white;
+        }
+
+        .no-children, .no-tutors {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-secondary);
+        }
+
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .action-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .action-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            border-color: var(--blue-primary);
+        }
+
+        .action-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--blue-gradient);
+            border-radius: var(--radius-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .action-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .action-description {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        .notification-panel {
+            position: fixed;
+            top: 0;
+            right: -400px;
+            width: 400px;
+            height: 100vh;
+            background: var(--bg-primary);
+            border-left: 1px solid var(--border-color);
+            z-index: 1001;
+            transition: right 0.3s ease;
+            overflow-y: auto;
+        }
+
+        .notification-panel.active {
+            right: 0;
+        }
+
+        .notification-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .notification-item {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .notification-item:hover {
+            background: var(--bg-secondary);
+        }
+
+        .notification-item.unread {
+            background: rgba(59, 130, 246, 0.05);
+            border-left: 3px solid var(--blue-primary);
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: var(--bg-primary);
+            border-radius: var(--radius-lg);
+            padding: 0;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            color: var(--text-primary);
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        .modal-footer {
+            padding: 1.5rem;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-secondary);
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+        }
+
+        .search-result-item {
+            padding: 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            margin-bottom: 0.5rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .search-result-item:hover {
+            background: var(--bg-secondary);
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-header {
+                padding: 1rem;
+            }
+
+            .dashboard-main {
+                padding: 1rem;
+            }
+
+            .dashboard-welcome h1 {
+                font-size: 2rem;
+            }
+
+            .children-grid, .tutors-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .quick-actions {
+                grid-template-columns: 1fr;
+            }
+
+            .notification-panel {
+                width: 100%;
+                right: -100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <header class="dashboard-header">
+            <div class="header-left">
+                <div class="profile-section" onclick="window.location.href='../pages/profile.html'">
+                    <div class="profile-picture" id="profilePicture">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="parent-name" id="parentName">Loading...</div>
+                </div>
+            </div>
+            <div class="header-right">
+                <button class="notification-btn" onclick="toggleNotifications()">
+                    <i class="fas fa-bell"></i>
+                    <span class="notification-badge" id="notificationBadge">2</span>
+                </button>
+                <button id="theme-toggle" class="theme-toggle-btn" aria-label="Toggle Theme">
+                    <div class="theme-icons">
+                        <span class="theme-icon light material-symbols-outlined">light_mode</span>
+                        <span class="theme-icon dark material-symbols-outlined">dark_mode</span>
+                    </div>
+                </button>
+                <button class="logout-btn" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Logout
+                </button>
+            </div>
+        </header>
+
+        <main class="dashboard-main">
+            <div class="dashboard-welcome">
+                <h1>Welcome back, <span id="welcomeName">Parent</span>!</h1>
+                <p>Monitor your children's academic progress and activities</p>
+            </div>
+
+            <!-- My Children Section -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <h3>👨‍👩‍👧‍👦 My Children</h3>
+                </div>
+                <div class="card-content">
+                    <div id="childrenGrid" class="children-grid">
+                        <!-- Children will be loaded here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Connected Tutors Section -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <h3>👨‍🏫 Connected Tutors</h3>
+                </div>
+                <div class="card-content">
+                    <div id="tutorsList" class="tutors-grid">
+                        <!-- Tutors will be loaded here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <h3>🚀 Quick Actions</h3>
+                </div>
+                <div class="card-content">
+                    <div class="quick-actions">
+                        <div class="action-card" onclick="window.location.href='../pages/parent-icup-payment.html'">
+                            <div class="action-icon">
+                                <i class="fas fa-credit-card"></i>
+                            </div>
+                            <div class="action-title">iCup Payment</div>
+                            <div class="action-description">Pay for your child's exam participation</div>
+                        </div>
+
+                        <div class="action-card" onclick="viewReports()">
+                            <div class="action-icon">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <div class="action-title">Progress Reports</div>
+                            <div class="action-description">View detailed academic performance reports</div>
+                        </div>
+
+                        <div class="action-card" onclick="contactTutors()">
+                            <div class="action-icon">
+                                <i class="fas fa-comments"></i>
+                            </div>
+                            <div class="action-title">Contact Tutors</div>
+                            <div class="action-description">Communicate with your child's tutors</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Notification Panel -->
+    <div class="notification-panel" id="notificationPanel">
+        <div class="notification-header">
+            <h3>Notifications</h3>
+            <button class="close-btn" onclick="toggleNotifications()">&times;</button>
+        </div>
+        <div id="notificationsList">
+            <!-- Notifications will be loaded here -->
+        </div>
+    </div>
+
+    <script src="../js/supabase-config.js"></script>
+    <script src="../js/api/user.js"></script>
+    <script src="../js/api/exam.js"></script>
+    <script src="../js/api/proctor.js"></script>
+    <script src="../js/api/evaluation.js"></script>
+    <script src="../js/api/payment.js"></script>
+    <script src="../js/backend-init.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/theme.js"></script>
+    <script>
+        let currentUser = null;
+        let notifications = [];
+
+        // Load parent profile and data
+        async function loadParentProfile() {
+            try {
+                await window.waitForBackend();
+
+                // Check if user is logged in using localStorage first
+                if (!localStorage.getItem('isLoggedIn') || localStorage.getItem('isLoggedIn') !== 'true') {
+                    window.location.href = '../auth/login.html';
+                    return;
+                }
+
+                // Get fresh user data from backend
+                const backendUser = await window.userAPI.getCurrentUser();
+
+                if (!backendUser || !backendUser.profile || backendUser.profile.role !== 'parent') {
+                    window.location.href = '../auth/login.html';
+                    return;
+                }
+
+                // Use fresh data from backend
+                currentUser = {
+                    ...backendUser.user,
+                    ...backendUser.profile,
+                    fullName: backendUser.profile.full_name || backendUser.profile.fullName
+                };
+
+                // Update profile display
+                const displayName = currentUser.fullName || currentUser.full_name || 'Parent';
+                document.getElementById('parentName').textContent = displayName;
+                document.getElementById('welcomeName').textContent = displayName;
+
+                // Update profile picture with latest data
+                const profilePicEl = document.getElementById('profilePicture');
+                if (currentUser.profile_picture) {
+                    profilePicEl.innerHTML = `<img src="${currentUser.profile_picture}" alt="Profile" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">`;
+                } else {
+                    profilePicEl.innerHTML = `<span>${displayName.charAt(0).toUpperCase()}</span>`;
+                }
+
+                // Load children, tutors and notifications
+                await loadChildren();
+                await loadConnectedTutors();
+                await loadNotifications();
+            } catch (error) {
+                console.error('Error loading parent profile:', error);
+                // Fallback to localStorage if backend fails
+                try {
+                    const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+                    const userProfile = JSON.parse(localStorage.getItem('userProfile') || '{}');
+
+                    if (userProfile.role !== 'parent') {
+                        window.location.href = '../auth/login.html';
+                        return;
+                    }
+
+                    const displayName = userProfile.full_name || userData.full_name || 'Parent';
+                    document.getElementById('parentName').textContent = displayName;
+                    document.getElementById('welcomeName').textContent = displayName;
+
+                    const profilePicEl = document.getElementById('profilePicture');
+                    if (userProfile.profile_picture) {
+                        profilePicEl.innerHTML = `<img src="${userProfile.profile_picture}" alt="Profile" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">`;
+                    } else {
+                        profilePicEl.innerHTML = `<span>${displayName.charAt(0).toUpperCase()}</span>`;
+                    }
+                } catch (fallbackError) {
+                    // Silent fallback - just continue with default display
+                    document.getElementById('parentName').textContent = 'Parent';
+                    document.getElementById('welcomeName').textContent = 'Parent';
+                }
+            }
+        }
+
+        async function loadChildren() {
+            try {
+                if (!currentUser) {
+                    return;
+                }
+
+                const userId = currentUser.user?.id || currentUser.id || currentUser.user_id;
+                if (!userId) {
+                    return;
+                }
+
+                // Get current exam to check enrollment status
+                const currentExamResult = await window.examAPI.getCurrentExam();
+                const currentExam = currentExamResult.success ? currentExamResult.data : null;
+
+                console.log('Current exam API result:', currentExamResult);
+                console.log('Current exam for enrollment check:', currentExam);
+                
+                // If no current exam found, try getting all exams to debug
+                if (!currentExam) {
+                    console.log('No current exam found, checking all exams...');
+                    const allExamsResult = await window.examAPI.getAllExams();
+                    console.log('All exams result:', allExamsResult);
+                    if (allExamsResult.success && allExamsResult.data) {
+                        console.log('Available exams:', allExamsResult.data.map(e => ({
+                            id: e.exam_id,
+                            title: e.title,
+                            week: e.week_number,
+                            archived: e.is_archived
+                        })));
+                    }
+                }
+
+                // Get parent's children list
+                const { data: parentInfo, error: parentError } = await window.supabaseClient
+                    .from('parent_additional_info')
+                    .select('students')
+                    .eq('user_id', userId)
+                    .single();
+
+                if (parentError && parentError.code !== 'PGRST116') {
+                    throw parentError;
+                }
+
+                const childrenIds = parentInfo?.students || [];
+                const childrenGrid = document.getElementById('childrenGrid');
+
+                if (childrenIds.length === 0) {
+                    childrenGrid.innerHTML = `
+                        <div class="no-children">
+                            <p>No children added yet</p>
+                            <small>Children are added during parent registration</small>
+                        </div>
+                    `;
+                    return;
+                }
+
+                // Get children details
+                const { data: children, error: childrenError } = await window.supabaseClient
+                    .from('user_information')
+                    .select('user_id, full_name, email, profile_picture')
+                    .in('user_id', childrenIds);
+
+                if (childrenError) throw childrenError;
+
+                // Check enrollment status for each child
+                const childrenWithEnrollment = await Promise.all(
+                    children.map(async (child) => {
+                        let isEnrolled = false;
+                        try {
+                            if (!currentExam) {
+                                console.log('No current exam available');
+                                return { ...child, isEnrolled: false };
+                            }
+
+                            // Check directly in student_enrollment table
+                            const { data: enrollmentData, error: enrollmentError } = await window.supabaseClient
+                                .from('student_enrollment')
+                                .select('*')
+                                .eq('user_id', child.user_id)
+                                .eq('week_number', currentExam.week_number)
+                                .eq('enrolled', true);
+
+                            if (enrollmentError) {
+                                console.error('Error checking enrollment for child:', child.user_id, enrollmentError);
+                                isEnrolled = false;
+                            } else {
+                                isEnrolled = enrollmentData && enrollmentData.length > 0;
+                                console.log('Enrollment check result for', child.full_name, ':', {
+                                    weekNumber: currentExam.week_number,
+                                    userId: child.user_id,
+                                    enrollmentData: enrollmentData,
+                                    isEnrolled: isEnrolled
+                                });
+                            }
+
+                        } catch (error) {
+                            console.error('Error checking enrollment for child:', child.user_id, error);
+                            isEnrolled = false;
+                        }
+
+                        console.log('Final enrollment status for', child.full_name, ':', isEnrolled);
+                        return {
+                            ...child,
+                            isEnrolled
+                        };
+                    })
+                );
+
+                // Render children cards
+                childrenGrid.innerHTML = childrenWithEnrollment.map(child => `
+                    <div class="child-card">
+                        <div class="child-avatar">
+                            ${child.profile_picture 
+                                ? `<img src="${child.profile_picture}" alt="${child.full_name}">`
+                                : `<div class="avatar-placeholder">${child.full_name?.charAt(0) || 'C'}</div>`
+                            }
+                        </div>
+                        <div class="child-info">
+                            <h4>${child.full_name}</h4>
+                            <p>${child.email}</p>
+                            <div class="enrollment-status">
+                                ${child.isEnrolled 
+                                    ? '<span style="color: var(--green-primary); font-size: 0.875rem; display: flex; align-items: center; gap: 0.25rem;"><i class="fas fa-check-circle"></i> Enrolled in iCup</span>'
+                                    : '<span style="color: var(--orange-primary); font-size: 0.875rem; display: flex; align-items: center; gap: 0.25rem;"><i class="fas fa-exclamation-circle"></i> Not Enrolled</span>'
+                                }
+                            </div>
+                        </div>
+                        <div class="child-actions">
+                            ${!child.isEnrolled ? `
+                                <button class="enroll-child-btn" onclick="enrollChild('${child.user_id}', '${child.full_name}')">
+                                    <i class="fas fa-plus"></i>
+                                    Enroll Child
+                                </button>
+                            ` : ''}
+                            <button class="btn-secondary" onclick="viewChildDetails('${child.user_id}')">
+                                View Details
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+
+            } catch (error) {
+                console.error('Error loading children:', error);
+                document.getElementById('childrenGrid').innerHTML = `
+                    <div class="no-children">
+                        <p>Unable to load children at this time</p>
+                        <button class="btn-primary" onclick="loadChildren()">Try Again</button>
+                    </div>
+                `;
+            }
+        }
+
+        async function loadConnectedTutors() {
+            try {
+                if (!currentUser) {
+                    return;
+                }
+
+                const userId = currentUser.user?.id || currentUser.id || currentUser.user_id;
+                if (!userId) {
+                    return;
+                }
+
+                // Get parent's tutors list
+                const { data: parentInfo, error: parentError } = await window.supabaseClient
+                    .from('parent_additional_info')
+                    .select('tutors')
+                    .eq('user_id', userId)
+                    .single();
+
+                if (parentError && parentError.code !== 'PGRST116') {
+                    throw parentError;
+                }
+
+                const tutorIds = parentInfo?.tutors || [];
+                const tutorsList = document.getElementById('tutorsList');
+
+                if (tutorIds.length === 0) {
+                    tutorsList.innerHTML = `
+                        <div class="no-tutors">
+                            <p>No tutors connected yet</p>
+                            <small>Tutors will appear here when your children connect with them</small>
+                        </div>
+                    `;
+                    return;
+                }
+
+                // Get tutors details
+                const { data: tutors, error: tutorsError } = await window.supabaseClient
+                    .from('user_information')
+                    .select('user_id, full_name, email, profile_picture')
+                    .in('user_id', tutorIds);
+
+                if (tutorsError) throw tutorsError;
+
+                // Render tutors cards
+                tutorsList.innerHTML = tutors.map(tutor => `
+                    <div class="tutor-card">
+                        <div class="tutor-avatar">
+                            ${tutor.profile_picture 
+                                ? `<img src="${tutor.profile_picture}" alt="${tutor.full_name}">`
+                                : `<div class="avatar-placeholder">${tutor.full_name?.charAt(0) || 'T'}</div>`
+                            }
+                        </div>
+                        <div class="tutor-info">
+                            <h4>${tutor.full_name}</h4>
+                            <p>${tutor.email}</p>
+                        </div>
+                        <div class="tutor-actions">
+                            <button class="btn-secondary" onclick="viewTutorDetails('${tutor.user_id}')">
+                                View Details
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+
+            } catch (error) {
+                document.getElementById('tutorsList').innerHTML = `
+                    <div class="no-tutors">
+                        <p>Unable to load tutors at this time</p>
+                        <button class="btn-secondary" onclick="loadConnectedTutors()">Try Again</button>
+                    </div>
+                `;
+            }
+        }
+
+        // Load notifications
+        async function loadNotifications() {
+            try {
+                // Mock notifications - replace with actual API call
+                notifications = [
+                    {
+                        id: 1,
+                        type: 'exam_result',
+                        title: 'Exam Results Available',
+                        message: 'Alex\'s iCup Week 3 results are now available',
+                        timestamp: new Date(Date.now() - 1 * 60 * 60 * 1000),
+                        unread: true
+                    },
+                    {
+                        id: 2,
+                        type: 'payment_due',
+                        title: 'Payment Due',
+                        message: 'Emily\'s iCup Week 4 payment is due in 2 days',
+                        timestamp: new Date(Date.now() - 3 * 60 * 60 * 1000),
+                        unread: true
+                    },
+                    {
+                        id: 3,
+                        type: 'tutor_message',
+                        title: 'Message from Tutor',
+                        message: 'Dr. Rahman sent a message about Alex\'s progress',
+                        timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000),
+                        unread: false
+                    }
+                ];
+
+                updateNotificationBadge();
+                renderNotifications();
+            } catch (error) {
+                console.error('Error loading notifications:', error);
+            }
+        }
+
+        // Update notification badge
+        function updateNotificationBadge() {
+            const unreadCount = notifications.filter(n => n.unread).length;
+            const badge = document.getElementById('notificationBadge');
+            if (unreadCount > 0) {
+                badge.textContent = unreadCount;
+                badge.style.display = 'flex';
+            } else {
+                badge.style.display = 'none';
+            }
+        }
+
+        // Render notifications
+        function renderNotifications() {
+            const notificationsList = document.getElementById('notificationsList');
+            notificationsList.innerHTML = notifications.map(notification => `
+                <div class="notification-item ${notification.unread ? 'unread' : ''}" onclick="markAsRead(${notification.id})">
+                    <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem;">
+                        <i class="fas ${getNotificationIcon(notification.type)}" style="color: var(--blue-primary);"></i>
+                        <strong style="color: var(--text-primary);">${notification.title}</strong>
+                    </div>
+                    <p style="color: var(--text-secondary); margin-bottom: 0.5rem;">${notification.message}</p>
+                    <small style="color: var(--text-muted);">${formatTime(notification.timestamp)}</small>
+                </div>
+            `).join('');
+        }
+
+        // Get notification icon
+        function getNotificationIcon(type) {
+            switch (type) {
+                case 'exam_result': return 'fa-chart-bar';
+                case 'payment_due': return 'fa-credit-card';
+                case 'tutor_message': return 'fa-comment';
+                default: return 'fa-bell';
+            }
+        }
+
+        // Format time
+        function formatTime(date) {
+            const now = new Date();
+            const diff = now - date;
+            const hours = Math.floor(diff / (1000 * 60 * 60));
+
+            if (hours < 1) return 'Just now';
+            if (hours < 24) return `${hours}h ago`;
+            const days = Math.floor(hours / 24);
+            return `${days}d ago`;
+        }
+
+        // Toggle notifications panel
+        function toggleNotifications() {
+            const panel = document.getElementById('notificationPanel');
+            panel.classList.toggle('active');
+        }
+
+        // Mark notification as read
+        function markAsRead(id) {
+            const notification = notifications.find(n => n.id === id);
+            if (notification) {
+                notification.unread = false;
+                updateNotificationBadge();
+                renderNotifications();
+            }
+        }
+
+        
+
+        // Redirect to payment page for child enrollment
+        async function enrollChild(childId, childName) {
+            try {
+                // Get current exam information
+                const examResult = await window.examAPI.getCurrentExamForPayment();
+                if (!examResult.success || !examResult.data) {
+                    // If no current exam, still allow going to payment page
+                    const params = new URLSearchParams({
+                        childId: childId,
+                        childName: childName
+                    });
+                    window.location.href = `../pages/parent-icup-payment.html?${params.toString()}`;
+                    return;
+                }
+
+                // Redirect to parent payment page with child and exam information
+                const params = new URLSearchParams({
+                    childId: childId,
+                    childName: childName
+                });
+
+                // Add exam info if available
+                if (examResult.data) {
+                    params.append('examId', examResult.data.exam_id);
+                    params.append('weekNumber', examResult.data.week_number);
+                }
+
+                console.log('Redirecting to payment page with params:', params.toString());
+                window.location.href = `../pages/parent-icup-payment.html?${params.toString()}`;
+            } catch (error) {
+                console.error('Error preparing enrollment:', error);
+                // Still allow going to payment page even if there's an error
+                const params = new URLSearchParams({
+                    childId: childId,
+                    childName: childName
+                });
+                console.log('Error fallback - redirecting with params:', params.toString());
+                window.location.href = `../pages/parent-icup-payment.html?${params.toString()}`;
+            }
+        }
+
+        function viewChildDetails(childId) {
+            alert('Child details feature coming soon');
+        }
+
+        function viewTutorDetails(tutorId) {
+            alert('Tutor details feature coming soon');
+        }
+
+        function viewReports() {
+            alert('Progress reports feature will be implemented here');
+        }
+
+        function contactTutors() {
+            alert('Contact tutors feature will be implemented here');
+        }
+
+        // Logout function
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                window.authManager.logout();
+                window.location.href = '../auth/login.html';
+            }
+        }
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            window.waitForBackend().then(() => {
+                loadParentProfile();
+            });
+        });
+    </script>
+</body>
+</html>

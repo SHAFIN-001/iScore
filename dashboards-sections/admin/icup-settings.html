@@ -1,0 +1,879 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>iCup Settings - iScore</title>
+    <!-- Favicon -->
+    <link rel="icon" href="../../assets/img/logo.png" type="image/x-icon">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- Font Awesome CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="../../css/main.css">
+    <link rel="stylesheet" href="../../css/theme.css">
+    <style>
+        .icup-settings-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: var(--bg-color);
+            min-height: 100vh;
+        }
+        
+        .settings-header {
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            border: 1px solid var(--border-color);
+            text-align: center;
+        }
+        
+        .settings-title {
+            color: var(--primary-color);
+            font-size: 28px;
+            font-weight: 600;
+            margin: 0;
+        }
+        
+        .settings-subtitle {
+            color: var(--text-secondary);
+            margin: 10px 0 0 0;
+        }
+        
+        .back-btn {
+            background: var(--secondary-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .back-btn:hover {
+            background: var(--secondary-hover);
+        }
+        
+        .form-container {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 30px;
+        }
+        
+        .form-section {
+            margin-bottom: 30px;
+        }
+        
+        .section-title {
+            color: var(--primary-color);
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid var(--primary-color);
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            color: var(--text-color);
+            font-weight: 500;
+            margin-bottom: 8px;
+            display: block;
+        }
+        
+        .form-control {
+            background: var(--bg-color);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-color);
+            padding: 12px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+            background: var(--bg-color);
+            color: var(--text-color);
+        }
+        
+        .submit-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .submit-btn:hover {
+            background: var(--primary-hover);
+        }
+        
+        .submit-btn:disabled {
+            background: var(--text-secondary);
+            cursor: not-allowed;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        .current-week-display {
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .week-number {
+            font-size: 36px;
+            font-weight: bold;
+            margin: 0;
+        }
+        
+        .week-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        .info-card {
+            background: var(--info-bg);
+            border: 1px solid var(--info-border);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .info-card .icon {
+            color: var(--info-color);
+            margin-right: 10px;
+        }
+        
+        .dynamic-field-container {
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            background: var(--bg-color);
+        }
+        
+        .dynamic-field-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            background: var(--card-bg);
+        }
+        
+        .dynamic-field-item:last-child {
+            margin-bottom: 0;
+        }
+        
+        .field-label {
+            min-width: 80px;
+            font-weight: 500;
+            color: var(--text-color);
+        }
+        
+        .field-input {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            background: var(--bg-color);
+            color: var(--text-color);
+            font-size: 14px;
+        }
+        
+        .field-input:focus {
+            border-color: var(--primary-color);
+            outline: none;
+        }
+        
+        .add-btn, .remove-btn {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .add-btn {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .add-btn:hover {
+            background: var(--primary-hover);
+        }
+        
+        .remove-btn {
+            background: var(--danger-color);
+            color: white;
+        }
+        
+        .remove-btn:hover {
+            background: var(--danger-hover);
+        }
+        
+        .add-field-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 15px;
+            background: var(--secondary-color);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+        
+        .add-field-btn:hover {
+            background: var(--secondary-hover);
+        }
+        
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .icup-settings-container {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="icup-settings-container">
+        <button class="back-btn" onclick="goBack()">
+            <i class="fas fa-arrow-left"></i>
+            Back to Dashboard
+        </button>
+
+        <div class="settings-header">
+            <h1 class="settings-title">
+                <i class="fas fa-trophy"></i>
+                iCup Settings
+            </h1>
+            <p class="settings-subtitle">Configure weekly iCup exam metadata and settings</p>
+        </div>
+
+        <!-- Current Week Display -->
+        <div class="current-week-display">
+            <div class="week-number" id="currentWeekNumber">Week 7</div>
+            <div class="week-label">Current iCup Week</div>
+        </div>
+
+        <div class="form-container">
+            <div class="info-card">
+                <i class="fas fa-info-circle icon"></i>
+                <strong>Important:</strong> All exam metadata will be stored in the icup_exam_metadata table and will be accessible across the platform.
+            </div>
+
+            <form id="icupSettingsForm">
+                <!-- Core Exam Metadata -->
+                <div class="form-section">
+                    <h3 class="section-title">
+                        <i class="fas fa-clipboard-list"></i>
+                        Core Exam Metadata
+                    </h3>
+                    
+                    <div class="form-group">
+                        <label for="examTitle">Exam Title</label>
+                        <input type="text" id="examTitle" name="examTitle" class="form-control" required placeholder="e.g., iCup Week 7">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="examDescription">Exam Description</label>
+                        <textarea id="examDescription" name="examDescription" class="form-control" rows="3" placeholder="Brief description of the exam"></textarea>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="weekNumber">Week Number</label>
+                            <input type="number" id="weekNumber" name="weekNumber" class="form-control" required min="1" max="52">
+                        </div>
+                        <div class="form-group">
+                            <label for="examType">Exam Type</label>
+                            <select id="examType" name="examType" class="form-control" required>
+                                <option value="Weekly Assessment">Weekly Assessment</option>
+                                <option value="Monthly Test">Monthly Test</option>
+                                <option value="Special Exam">Special Exam</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="subjects">Subjects</label>
+                        <select id="subjects" name="subjects" class="form-control" multiple required>
+                            <option value="Mathematics">Mathematics</option>
+                            <option value="Physics">Physics</option>
+                            <option value="Chemistry">Chemistry</option>
+                            <option value="Biology">Biology</option>
+                            <option value="English">English</option>
+                            <option value="Bangla">Bangla</option>
+                            <option value="ICT">ICT</option>
+                        </select>
+                        <small class="form-text text-muted">Hold Ctrl/Cmd to select multiple subjects</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="syllabus">Syllabus</label>
+                        <input type="text" id="syllabus" name="syllabus" class="form-control" placeholder="e.g., Algebra + Newtonian Motion">
+                    </div>
+                </div>
+
+                <!-- Scheduling & Availability -->
+                <div class="form-section">
+                    <h3 class="section-title">
+                        <i class="fas fa-calendar-alt"></i>
+                        Scheduling & Availability
+                    </h3>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="examDate">Exam Date</label>
+                            <input type="date" id="examDate" name="examDate" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="examTime">Exam Time</label>
+                            <input type="time" id="examTime" name="examTime" class="form-control" required value="10:00">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="duration">Duration (minutes)</label>
+                            <input type="number" id="duration" name="duration" class="form-control" required value="180" min="30">
+                        </div>
+                        <div class="form-group">
+                            <label for="registrationDeadline">Registration Deadline</label>
+                            <input type="datetime-local" id="registrationDeadline" name="registrationDeadline" class="form-control" required>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Evaluation & Marking -->
+                <div class="form-section">
+                    <h3 class="section-title">
+                        <i class="fas fa-user-graduate"></i>
+                        Evaluation & Marking
+                    </h3>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="totalMarks">Total Marks</label>
+                            <input type="number" id="totalMarks" name="totalMarks" class="form-control" required value="100" min="1">
+                        </div>
+                        <div class="form-group">
+                            <label for="passMarks">Pass Marks</label>
+                            <input type="number" id="passMarks" name="passMarks" class="form-control" required value="40" min="1">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="evaluationType">Evaluation Type</label>
+                            <select id="evaluationType" name="evaluationType" class="form-control" required>
+                                <option value="manual">Manual by Tutors</option>
+                                <option value="auto">Automatic</option>
+                                <option value="hybrid">Hybrid</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="markingDeadline">Marking Deadline</label>
+                            <input type="datetime-local" id="markingDeadline" name="markingDeadline" class="form-control" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="questionCount">Number of Questions</label>
+                        <input type="number" id="questionCount" name="questionCount" class="form-control" required value="10" min="1">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Question Marks Distribution</label>
+                        <div class="dynamic-field-container" id="questionMarksContainer">
+                            <div class="dynamic-field-item">
+                                <span class="field-label">Question 1:</span>
+                                <input type="number" class="field-input question-marks-input" data-question="1" placeholder="Marks" min="1" value="10" required>
+                                <button type="button" class="remove-btn" onclick="removeQuestionMark(1)">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <button type="button" class="add-field-btn" onclick="addQuestionMark()">
+                            <i class="fas fa-plus"></i>
+                            Add Question
+                        </button>
+                        <small class="form-text text-muted">Total marks should equal the "Total Marks" field above.</small>
+                    </div>
+                </div>
+
+                <!-- PDF Documents -->
+                <div class="form-section">
+                    <h3 class="section-title">
+                        <i class="fas fa-file-pdf"></i>
+                        PDF Documents
+                    </h3>
+                    
+                    <div class="form-group">
+                        <label>Question Paper PDF URLs (Multiple Sets)</label>
+                        <div class="dynamic-field-container" id="questionSetsContainer">
+                            <div class="dynamic-field-item">
+                                <span class="field-label">Set 1:</span>
+                                <input type="url" class="field-input question-set-input" data-set="1" placeholder="https://example.com/questions-set1.pdf">
+                                <button type="button" class="remove-btn" onclick="removeQuestionSet(1)">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <button type="button" class="add-field-btn" onclick="addQuestionSet()">
+                            <i class="fas fa-plus"></i>
+                            Add Question Set
+                        </button>
+                        <small class="form-text text-muted">Add multiple question sets for random distribution to tutors. Each set should have the same structure but different questions.</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="answerPdfUrl">Answer Sheet PDF URL</label>
+                        <input type="url" id="answerPdfUrl" name="answerPdfUrl" class="form-control" placeholder="https://example.com/answers-week7.pdf">
+                        <small class="form-text text-muted">URL to the complete answer sheet PDF with all correct answers</small>
+                    </div>
+                </div>
+
+                <!-- Miscellaneous -->
+                <div class="form-section">
+                    <h3 class="section-title">
+                        <i class="fas fa-cog"></i>
+                        Miscellaneous
+                    </h3>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="examFee">Exam Fee (৳)</label>
+                            <input type="number" id="examFee" name="examFee" class="form-control" required value="100" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label for="paymentNumber">Payment Number</label>
+                            <input type="text" id="paymentNumber" name="paymentNumber" class="form-control" required placeholder="01700111222">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="gradeLevel">Grade Level</label>
+                            <select id="gradeLevel" name="gradeLevel" class="form-control" required>
+                                <option value="SSC">SSC</option>
+                                <option value="HSC">HSC</option>
+                                <option value="JSC">JSC</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="difficultyLevel">Difficulty Level</label>
+                            <select id="difficultyLevel" name="difficultyLevel" class="form-control" required>
+                                <option value="Easy">Easy</option>
+                                <option value="Medium">Medium</option>
+                                <option value="Hard">Hard</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="language">Language</label>
+                        <select id="language" name="language" class="form-control" required>
+                            <option value="Bangla">Bangla</option>
+                            <option value="English">English</option>
+                            <option value="Mixed">Mixed</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="notes">Additional Notes</label>
+                        <textarea id="notes" name="notes" class="form-control" rows="3" placeholder="Any special instructions or notes"></textarea>
+                    </div>
+                </div>
+
+                <button type="submit" class="submit-btn" id="submitBtn">
+                    <i class="fas fa-save"></i>
+                    Save iCup Settings
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../../js/supabase-config.js"></script>
+    <script src="../../js/backend-init.js"></script>
+    <script src="../../js/api/user.js"></script>
+    <script src="../../js/api/exam.js"></script>
+    <script src="../../js/api/proctor.js"></script>
+    <script src="../../js/api/evaluation.js"></script>
+    <script src="../../js/api/payment.js"></script>
+    <script src="../../js/auth.js"></script>
+    <script src="../../js/theme.js"></script>
+    <script>
+        let currentUser = null;
+        let questionMarkCounter = 1;
+        let questionSetCounter = 1;
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Wait for backend services
+            await window.waitForBackend();
+            
+            // Check authentication
+            const user = await window.authManager.getCurrentUser();
+            if (!user || user.profile.role !== 'admin') {
+                window.location.href = '../../auth/login.html';
+                return;
+            }
+
+            currentUser = user;
+            console.log('Admin user loaded:', currentUser);
+
+            // Set default values
+            setDefaultValues();
+            
+            // Set up form handler
+            setupFormHandler();
+            
+            // Add event listener for question count changes
+            document.getElementById('questionCount').addEventListener('change', updateQuestionCount);
+            document.getElementById('totalMarks').addEventListener('change', updateQuestionMarksTotal);
+        });
+
+        function updateQuestionCount() {
+            const questionCount = parseInt(document.getElementById('questionCount').value) || 10;
+            const container = document.getElementById('questionMarksContainer');
+            const currentItems = container.querySelectorAll('.dynamic-field-item').length;
+            
+            if (questionCount > currentItems) {
+                // Add more questions
+                for (let i = currentItems + 1; i <= questionCount; i++) {
+                    addQuestionMark(i);
+                }
+            } else if (questionCount < currentItems) {
+                // Remove excess questions
+                const items = container.querySelectorAll('.dynamic-field-item');
+                for (let i = items.length - 1; i >= questionCount; i--) {
+                    items[i].remove();
+                }
+            }
+            
+            updateQuestionMarksTotal();
+        }
+        
+        function updateQuestionMarksTotal() {
+            const totalMarks = parseInt(document.getElementById('totalMarks').value) || 100;
+            const questionInputs = document.querySelectorAll('.question-marks-input');
+            const questionCount = questionInputs.length;
+            
+            if (questionCount > 0) {
+                const marksPerQuestion = Math.floor(totalMarks / questionCount);
+                const remainder = totalMarks % questionCount;
+                
+                questionInputs.forEach((input, index) => {
+                    const marks = marksPerQuestion + (index < remainder ? 1 : 0);
+                    input.value = marks;
+                });
+            }
+        }
+        
+        function addQuestionMark(questionNumber = null) {
+            if (questionNumber === null) {
+                questionMarkCounter++;
+                questionNumber = questionMarkCounter;
+            } else {
+                questionMarkCounter = Math.max(questionMarkCounter, questionNumber);
+            }
+            
+            const container = document.getElementById('questionMarksContainer');
+            const item = document.createElement('div');
+            item.className = 'dynamic-field-item';
+            item.innerHTML = `
+                <span class="field-label">Question ${questionNumber}:</span>
+                <input type="number" class="field-input question-marks-input" data-question="${questionNumber}" placeholder="Marks" min="1" value="10" required>
+                <button type="button" class="remove-btn" onclick="removeQuestionMark(${questionNumber})">
+                    <i class="fas fa-trash"></i>
+                </button>
+            `;
+            container.appendChild(item);
+        }
+        
+        function removeQuestionMark(questionNumber) {
+            const container = document.getElementById('questionMarksContainer');
+            const items = container.querySelectorAll('.dynamic-field-item');
+            
+            // Don't allow removing if only one question remains
+            if (items.length <= 1) {
+                alert('You must have at least one question.');
+                return;
+            }
+            
+            items.forEach(item => {
+                const input = item.querySelector('.question-marks-input');
+                if (input && parseInt(input.dataset.question) === questionNumber) {
+                    item.remove();
+                }
+            });
+        }
+        
+        function addQuestionSet() {
+            questionSetCounter++;
+            const container = document.getElementById('questionSetsContainer');
+            const item = document.createElement('div');
+            item.className = 'dynamic-field-item';
+            item.innerHTML = `
+                <span class="field-label">Set ${questionSetCounter}:</span>
+                <input type="url" class="field-input question-set-input" data-set="${questionSetCounter}" placeholder="https://example.com/questions-set${questionSetCounter}.pdf">
+                <button type="button" class="remove-btn" onclick="removeQuestionSet(${questionSetCounter})">
+                    <i class="fas fa-trash"></i>
+                </button>
+            `;
+            container.appendChild(item);
+        }
+        
+        function removeQuestionSet(setNumber) {
+            const container = document.getElementById('questionSetsContainer');
+            const items = container.querySelectorAll('.dynamic-field-item');
+            
+            // Don't allow removing if only one set remains
+            if (items.length <= 1) {
+                alert('You must have at least one question set.');
+                return;
+            }
+            
+            items.forEach(item => {
+                const input = item.querySelector('.question-set-input');
+                if (input && parseInt(input.dataset.set) === setNumber) {
+                    item.remove();
+                }
+            });
+        }
+
+        function setDefaultValues() {
+            // Set current week number
+            const currentWeek = getCurrentWeekNumber();
+            document.getElementById('weekNumber').value = currentWeek;
+            document.getElementById('currentWeekNumber').textContent = `Week ${currentWeek}`;
+            
+            // Set default exam title
+            document.getElementById('examTitle').value = `iCup Week ${currentWeek}`;
+            
+            // Set default dates (next Friday)
+            const nextFriday = getNextFriday();
+            document.getElementById('examDate').value = nextFriday.toISOString().split('T')[0];
+            
+            // Set registration deadline (Thursday before exam)
+            const regDeadline = new Date(nextFriday);
+            regDeadline.setDate(regDeadline.getDate() - 1);
+            regDeadline.setHours(23, 59);
+            document.getElementById('registrationDeadline').value = regDeadline.toISOString().slice(0, 16);
+            
+            // Set marking deadline (Monday after exam)
+            const markingDeadline = new Date(nextFriday);
+            markingDeadline.setDate(markingDeadline.getDate() + 3);
+            markingDeadline.setHours(10, 0);
+            document.getElementById('markingDeadline').value = markingDeadline.toISOString().slice(0, 16);
+            
+            // Set default question marks (10 questions, 10 marks each)
+            const container = document.getElementById('questionMarksContainer');
+            container.innerHTML = ''; // Clear existing
+            questionMarkCounter = 0;
+            
+            for (let i = 1; i <= 10; i++) {
+                addQuestionMark(i);
+            }
+            
+            // Initialize with first question set
+            questionSetCounter = 1;
+        }
+
+        function getCurrentWeekNumber() {
+            const now = new Date();
+            const start = new Date(now.getFullYear(), 0, 1);
+            const diff = now - start;
+            const oneWeek = 1000 * 60 * 60 * 24 * 7;
+            return Math.ceil(diff / oneWeek);
+        }
+
+        function getNextFriday() {
+            const today = new Date();
+            const dayOfWeek = today.getDay();
+            const daysUntilFriday = (5 - dayOfWeek + 7) % 7;
+            const nextFriday = new Date(today);
+            nextFriday.setDate(today.getDate() + (daysUntilFriday === 0 ? 7 : daysUntilFriday));
+            return nextFriday;
+        }
+
+        function setupFormHandler() {
+            const form = document.getElementById('icupSettingsForm');
+            form.addEventListener('submit', handleFormSubmission);
+        }
+
+        async function handleFormSubmission(e) {
+            e.preventDefault();
+            
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+
+            try {
+                const formData = new FormData(e.target);
+                
+                // Parse dates
+                const examDate = formData.get('examDate');
+                const examTime = formData.get('examTime');
+                const scheduledAt = new Date(`${examDate}T${examTime}`);
+                
+                // Parse subjects array
+                const subjects = formData.getAll('subjects');
+                
+                // Calculate available times
+                const availableFrom = new Date(scheduledAt);
+                availableFrom.setHours(scheduledAt.getHours() - 1); // 1 hour before
+                
+                const availableUntil = new Date(scheduledAt);
+                availableUntil.setMinutes(availableUntil.getMinutes() + parseInt(formData.get('duration')));
+                
+                // Collect question marks from dynamic fields
+                const questionMarksInputs = document.querySelectorAll('.question-marks-input');
+                const questionMarks = {};
+                let marksSum = 0;
+                
+                questionMarksInputs.forEach((input, index) => {
+                    const marks = parseInt(input.value) || 0;
+                    questionMarks[(index + 1).toString()] = marks;
+                    marksSum += marks;
+                });
+                
+                // Validate that question marks sum equals total marks
+                const totalMarks = parseInt(formData.get('totalMarks'));
+                if (marksSum !== totalMarks) {
+                    throw new Error(`Question marks sum (${marksSum}) must equal total marks (${totalMarks})`);
+                }
+                
+                // Collect question set URLs from dynamic fields
+                const questionSetInputs = document.querySelectorAll('.question-set-input');
+                const questionSets = {};
+                let hasValidSet = false;
+                
+                questionSetInputs.forEach((input, index) => {
+                    const url = input.value.trim();
+                    if (url) {
+                        questionSets[(index + 1).toString()] = url;
+                        hasValidSet = true;
+                    }
+                });
+                
+                if (!hasValidSet) {
+                    throw new Error('At least one question set URL is required');
+                }
+
+                // Create exam metadata object (let database auto-generate exam_id)
+                const examData = {
+                    title: formData.get('examTitle'),
+                    slug: generateSlug(formData.get('examTitle')),
+                    week_number: parseInt(formData.get('weekNumber')),
+                    category: 'iCup',
+                    subject: subjects,
+                    syllabus: formData.get('syllabus'),
+                    grade_level: formData.get('gradeLevel'),
+                    exam_type: formData.get('examType'),
+                    duration_minutes: parseInt(formData.get('duration')),
+                    total_marks: parseInt(formData.get('totalMarks')),
+                    difficulty_level: formData.get('difficultyLevel'),
+                    language: formData.get('language'),
+                    question_count: Object.keys(questionMarks).length,
+                    question_marks: questionMarks,
+                    question_pdf_url: questionSets,
+                    answer_all_pdf_url: formData.get('answerPdfUrl') || null,
+                    fee: parseInt(formData.get('examFee')),
+                    pay_number: formData.get('paymentNumber'),
+                    scheduled_at: scheduledAt.toISOString(),
+                    available_from: availableFrom.toISOString(),
+                    available_until: availableUntil.toISOString(),
+                    allow_late_submission: false,
+                    submit_deadline: availableUntil.toISOString(),
+                    evaluation_type: formData.get('evaluationType'),
+                    marking_deadline: new Date(formData.get('markingDeadline')).toISOString(),
+                    allow_partial_marks: true,
+                    notes: formData.get('notes'),
+                    tags: [`Week ${formData.get('weekNumber')}`, 'iCup'],
+                    is_archived: false
+                };
+
+                console.log('Creating exam with data:', examData);
+
+                // Save to database
+                const result = await window.examAPI.createExam(examData);
+
+                if (result.success) {
+                    alert('✅ iCup settings saved successfully!\n\nExam metadata has been stored in the database and is now accessible across the platform.');
+                    
+                    // Reset form or redirect
+                    e.target.reset();
+                    setDefaultValues();
+                } else {
+                    throw new Error(result.error);
+                }
+
+            } catch (error) {
+                console.error('Error saving iCup settings:', error);
+                alert('❌ Failed to save iCup settings: ' + error.message);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-save"></i> Save iCup Settings';
+            }
+        }
+
+        
+
+        function generateSlug(title) {
+            return title.toLowerCase()
+                       .replace(/[^a-z0-9]+/g, '-')
+                       .replace(/(^-|-$)/g, '');
+        }
+
+        function goBack() {
+            window.location.href = '../admin-dashboard.html';
+        }
+    </script>
+</body>
+</html>

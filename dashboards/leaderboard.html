@@ -1,0 +1,52 @@
+` tags.
+
+```text
+Applying the theme toggle styling fixes and HTML structure updates to the leaderboard page.
+```
+
+<replit_final_file>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leaderboard</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/theme.css">
+    <link rel="stylesheet" href="https://unpkg.com/ Lucide @latest/dist/lucide.min.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-container">
+            <button class="back-btn" onclick="goBack()">
+                <i data-lucide="arrow-left"></i>
+            </button>
+            <h1 class="page-title">LEADERBOARD</h1>
+            <button id="theme-toggle" class="theme-toggle-btn" aria-label="Toggle Theme">
+                    <div class="theme-icons">
+                        <span class="theme-icon light material-symbols-outlined">light_mode</span>
+                        <span class="theme-icon dark material-symbols-outlined">dark_mode</span>
+                    </div>
+                </button>
+        </div>
+        </div>
+
+        <div class="leaderboard">
+            <!-- Leaderboard content will be dynamically added here -->
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/lucide@latest/dist/lucide.js"></script>
+    <script src="../js/backend-init.js"></script>
+    <script src="../js/theme.js"></script>
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        function goBack() {
+            window.history.back();
+        }
+    </script>
+</body>
+</html>

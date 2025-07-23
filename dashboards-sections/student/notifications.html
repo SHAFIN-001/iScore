@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Notifications - iScore</title>
+    <link rel="stylesheet" href="../../css/main.css">
+    <link rel="stylesheet" href="../../css/theme.css">
+    <link rel="stylesheet" href="../../css/responsive.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .notifications-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .notification-card {
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            border: 1px solid var(--border-color);
+            position: relative;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideOut {
+            from {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            to {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+        }
+
+        .tutor-response-card.accepted {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            color: white;
+            border: none;
+        }
+
+        .tutor-response-card.rejected {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+            border: none;
+        }
+
+        .notification-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .notification-title {
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .notification-time {
+            font-size: 0.875rem;
+            opacity: 0.8;
+        }
+
+        .remove-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            cursor: pointer;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+
+        .remove-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .remove-btn.default {
+            background: var(--error-color);
+            color: white;
+        }
+
+        .remove-btn.default:hover {
+            background: var(--error-color-dark);
+        }
+
+        .no-notifications {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-muted);
+        }
+
+        .no-notifications i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .loading-notifications {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 3rem;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid var(--border-color);
+            border-top: 4px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .header-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .back-btn {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            cursor: pointer;
+            color: var(--text-primary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s;
+        }
+
+        .back-btn:hover {
+            background: var(--bg-primary);
+            transform: translateY(-2px);
+        }
+
+        .page-title {
+            font-size: 2rem;
+            font-weight: 700;
+            background: var(--blue-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+    </style>
+</head>
+<body>
+    <div class="notifications-container">
+        <div class="header-section">
+            <a href="../../dashboards/student-dashboard.html" class="back-btn">
+                <i class="fas fa-arrow-left"></i>
+                Back
+            </a>
+            <h1 class="page-title">Notifications</h1>
+            <button id="theme-toggle" class="theme-toggle-btn" aria-label="Toggle Theme">
+                <div class="theme-icons">
+                    <span class="theme-icon light material-symbols-outlined">light_mode</span>
+                    <span class="theme-icon dark material-symbols-outlined">dark_mode</span>
+                </div>
+            </button>
+        </div>
+
+        <div id="notificationsContent">
+            <div class="loading-notifications">
+                <div class="spinner"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../../js/supabase-config.js"></script>
+    <script src="../../js/api/user.js"></script>
+    <script src="../../js/api/exam.js"></script>
+    <script src="../../js/api/proctor.js"></script>
+    <script src="../../js/api/evaluation.js"></script>
+    <script src="../../js/api/payment.js"></script>
+    <script src="../../js/backend-init.js"></script>
+    <script src="../../js/auth.js"></script>
+    <script src="../../js/theme.js"></script>
+
+    <script>
+        let currentUser = null;
+
+        // Initialize tracking variables
+        window.processedNotifications = window.processedNotifications || [];
+        window.stopNotificationReloading = false;
+
+        // Initialize page
+        async function initializePage() {
+            try {
+                await window.waitForBackend();
+
+                // Check authentication
+                const userData = await window.userAPI.getCurrentUser();
+                if (!userData || !userData.profile || userData.profile.role !== 'student') {
+                    window.location.href = '../../auth/login.html';
+                    return;
+                }
+
+                currentUser = userData;
+                await loadNotifications();
+
+            } catch (error) {
+                console.error('Error initializing page:', error);
+                showError('Failed to load notifications');
+            }
+        }
+
+        // Load notifications
+        async function loadNotifications() {
+            try {
+                const { data: notifications, error } = await window.supabaseClient
+                    .from('notifications')
+                    .select('*')
+                    .eq('user_id', currentUser.user.id)
+                    .eq('hidden', false)
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+
+                console.log('Loaded notifications:', notifications);
+                displayNotifications(notifications || []);
+
+            } catch (error) {
+                console.error('Error loading notifications:', error);
+                showError('Failed to load notifications');
+            }
+        }
+
+        // Display notifications
+        function displayNotifications(notifications) {
+            const container = document.getElementById('notificationsContent');
+
+            if (!container) {
+                console.error('Notifications container not found');
+                return;
+            }
+
+            if (notifications.length === 0) {
+                container.innerHTML = `
+                    <div class="no-notifications">
+                        <i class="fas fa-bell-slash"></i>
+                        <h3>No notifications</h3>
+                        <p>You're all caught up!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const notificationsHTML = notifications.map(notification => {
+                if (notification.type === 'tutor_response') {
+                    return createTutorResponseCard(notification);
+                } else {
+                    return createGenericNotificationCard(notification);
+                }
+            }).join('');
+
+            container.innerHTML = notificationsHTML;
+        }
+
+        // Create tutor response notification card
+        function createTutorResponseCard(notification) {
+            const timeAgo = getTimeAgo(notification.created_at);
+            const isAccepted = notification.message.includes('Congratulations');
+            const cardClass = isAccepted ? 'accepted' : 'rejected';
+
+            return `
+                <div class="notification-card tutor-response-card ${cardClass}" data-id="${notification.id}">
+                    <div class="notification-header">
+                        <div>
+                            <div class="notification-title">${notification.title}</div>
+                            <div class="notification-time">${timeAgo}</div>
+                        </div>
+                        <button class="remove-btn" onclick="removeNotification('${notification.id}')">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <p>${notification.message}</p>
+                </div>
+            `;
+        }
+
+        // Create generic notification card
+        function createGenericNotificationCard(notification) {
+            const timeAgo = getTimeAgo(notification.created_at);
+
+            return `
+                <div class="notification-card" data-id="${notification.id}">
+                    <div class="notification-header">
+                        <div>
+                            <div class="notification-title">${notification.title}</div>
+                            <div class="notification-time">${timeAgo}</div>
+                        </div>
+                        <button class="remove-btn default" onclick="removeNotification('${notification.id}')">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <p>${notification.message}</p>
+                </div>
+            `;
+        }
+
+        // Remove notification
+        async function removeNotification(notificationId) {
+            try {
+                // Mark notification as hidden instead of deleting
+                const { error } = await window.supabaseClient
+                    .from('notifications')
+                    .update({ 
+                        hidden: true,
+                        read: true,
+                        updated_at: new Date().toISOString()
+                    })
+                    .eq('id', notificationId)
+                    .eq('user_id', currentUser.user.id);
+
+                if (error) throw error;
+
+                // Remove from UI immediately
+                const notificationCard = document.querySelector(`[data-id="${notificationId}"]`);
+                if (notificationCard) {
+                    notificationCard.style.display = 'none';
+                    notificationCard.remove();
+                }
+
+                // Get ACTUAL notification count from visible notifications only
+                const { data: visibleNotifications, error: countError } = await window.supabaseClient
+                    .from('notifications')
+                    .select('id')
+                    .eq('user_id', currentUser.user.id)
+                    .eq('hidden', false);
+
+                const actualCount = visibleNotifications ? visibleNotifications.length : 0;
+
+                // Update notification count in localStorage with actual count
+                localStorage.setItem('notificationCount', actualCount.toString());
+                
+                // Dispatch custom event for student dashboard to listen
+                window.dispatchEvent(new CustomEvent('notificationRemoved', { 
+                    detail: { newCount: actualCount, notificationId } 
+                }));
+
+                // Also trigger storage event for cross-tab sync
+                window.dispatchEvent(new StorageEvent('storage', {
+                    key: 'notificationCount',
+                    newValue: actualCount.toString(),
+                    oldValue: localStorage.getItem('notificationCount') || '0'
+                }));
+
+                // Check if no notifications left
+                const remainingCards = document.querySelectorAll('.notification-card');
+                if (remainingCards.length === 0) {
+                    document.getElementById('notificationsContent').innerHTML = `
+                        <div class="no-notifications">
+                            <i class="fas fa-bell-slash"></i>
+                            <h3>No notifications</h3>
+                            <p>You're all caught up!</p>
+                        </div>
+                    `;
+                }
+
+            } catch (error) {
+                console.error('Error removing notification:', error);
+                alert('Failed to remove notification. Please try again.');
+            }
+        }
+
+        // Show error message
+        function showError(message) {
+            const container = document.getElementById('notificationsContent');
+            if (container) {
+                container.innerHTML = `
+                    <div class="no-notifications">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <h3>Error</h3>
+                        <p>${message}</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Get time ago string
+        function getTimeAgo(dateString) {
+            const date = new Date(dateString);
+            const now = new Date();
+            const diffInSeconds = Math.floor((now - date) / 1000);
+
+            if (diffInSeconds < 60) {
+                return 'Just now';
+            } else if (diffInSeconds < 3600) {
+                const minutes = Math.floor(diffInSeconds / 60);
+                return `${minutes} minute${minutes > 1 ? 's' : ''} ago`;
+            } else if (diffInSeconds < 86400) {
+                const hours = Math.floor(diffInSeconds / 3600);
+                return `${hours} hour${hours > 1 ? 's' : ''} ago`;
+            } else {
+                const days = Math.floor(diffInSeconds / 86400);
+                return `${days} day${days > 1 ? 's' : ''} ago`;
+            }
+        }
+
+        // Initialize page when DOM is loaded
+        document.addEventListener('DOMContentLoaded', initializePage);
+    </script>
+</body>
+</html>

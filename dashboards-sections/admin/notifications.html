@@ -1,0 +1,1056 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Notifications - iScore</title>
+    <link rel="stylesheet" href="../../css/main.css">
+    <link rel="stylesheet" href="../../css/theme.css">
+    <link rel="stylesheet" href="../../css/responsive.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .notifications-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .notification-card {
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            border: 1px solid var(--border-color);
+            position: relative;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideOut {
+            from {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            to {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+        }
+
+        .enrollment-request-card {
+            background: linear-gradient(135deg, var(--blue-gradient));
+            color: white;
+            border: none;
+        }
+
+        .notification-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .notification-title {
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .notification-time {
+            font-size: 0.875rem;
+            opacity: 0.8;
+        }
+
+        .remove-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            cursor: pointer;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+
+        .remove-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .remove-btn.default {
+            background: var(--error-color);
+            color: white;
+        }
+
+        .remove-btn.default:hover {
+            background: var(--error-color-dark);
+        }
+
+        .student-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .student-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 1.5rem;
+        }
+
+        .student-details h3 {
+            margin: 0 0 0.25rem 0;
+            font-weight: 600;
+        }
+
+        .student-details p {
+            margin: 0;
+            opacity: 0.9;
+            font-size: 0.9rem;
+        }
+
+        .student-additional-info {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+
+        .info-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .info-label {
+            font-weight: 500;
+            opacity: 0.9;
+        }
+
+        .info-value {
+            text-align: right;
+        }
+
+        .notification-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+        }
+
+        .action-btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .approve-btn {
+            background: rgba(46, 204, 113, 0.9);
+            color: white;
+        }
+
+        .approve-btn:hover {
+            background: rgba(46, 204, 113, 1);
+            transform: translateY(-2px);
+        }
+
+        .reject-btn {
+            background: rgba(231, 76, 60, 0.9);
+            color: white;
+        }
+
+        .reject-btn:hover {
+            background: rgba(231, 76, 60, 1);
+            transform: translateY(-2px);
+        }
+
+        .no-notifications {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-muted);
+        }
+
+        .no-notifications i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .loading-notifications {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 3rem;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid var(--border-color);
+            border-top: 4px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .header-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .back-btn {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            cursor: pointer;
+            color: var(--text-primary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s;
+        }
+
+        .back-btn:hover {
+            background: var(--bg-primary);
+            transform: translateY(-2px);
+        }
+
+        .page-title {
+            font-size: 2rem;
+            font-weight: 700;
+            background: var(--blue-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+    </style>
+</head>
+<body>
+    <div class="notifications-container">
+        <div class="header-section">
+            <a href="../../dashboards/admin-dashboard.html" class="back-btn">
+                <i class="fas fa-arrow-left"></i>
+                Back
+            </a>
+            <h1 class="page-title">Admin Notifications</h1>
+            <button id="theme-toggle" class="theme-toggle-btn" aria-label="Toggle Theme">
+                <div class="theme-icons">
+                    <span class="theme-icon light material-symbols-outlined">light_mode</span>
+                    <span class="theme-icon dark material-symbols-outlined">dark_mode</span>
+                </div>
+            </button>
+        </div>
+
+        <div id="notificationsContent">
+            <div class="loading-notifications">
+                <div class="spinner"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load scripts once -->
+    <script src="../../js/supabase-config.js"></script>
+    <script src="../../js/api/user.js"></script>
+    <script src="../../js/api/exam.js"></script>
+    <script src="../../js/api/proctor.js"></script>
+    <script src="../../js/api/evaluation.js"></script>
+    <script src="../../js/api/payment.js"></script>
+    <script src="../../js/backend-init.js"></script>
+    <script src="../../js/auth.js"></script>
+    <script src="../../js/theme.js"></script>
+
+    <script>
+        let currentUser = null;
+
+        // Initialize page
+        async function initializePage() {
+            try {
+                await window.waitForBackend();
+
+                // Check authentication
+                const userData = await window.userAPI.getCurrentUser();
+                if (!userData || !userData.profile || userData.profile.role !== 'admin') {
+                    window.location.href = '../../auth/login.html';
+                    return;
+                }
+
+                currentUser = userData;
+                console.log('Current admin loaded:', currentUser.profile.full_name);
+                await loadNotifications();
+
+            } catch (error) {
+                console.error('Error initializing page:', error);
+                showError('Failed to load notifications');
+            }
+        }
+
+        // Load notifications
+        async function loadNotifications() {
+            try {
+                const { data: notifications, error } = await window.supabaseClient
+                    .from('notifications')
+                    .select('*')
+                    .eq('user_id', currentUser.user.id)
+                    .eq('hidden', false)
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+
+                console.log('Loaded notifications:', notifications);
+                displayNotifications(notifications || []);
+
+            } catch (error) {
+                console.error('Error loading notifications:', error);
+                showError('Failed to load notifications');
+            }
+        }
+
+        // Display notifications
+        async function displayNotifications(notifications) {
+            const container = document.getElementById('notificationsContent');
+
+            if (!container) {
+                console.error('Notifications container not found');
+                return;
+            }
+
+            if (notifications.length === 0) {
+                container.innerHTML = `
+                    <div class="no-notifications">
+                        <i class="fas fa-bell-slash"></i>
+                        <h3>No notifications</h3>
+                        <p>You're all caught up!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const notificationsHTML = await Promise.all(notifications.map(async notification => {
+                if (notification.type === 'enrollment_request') {
+                    return await createEnrollmentRequestCardWithInfo(notification);
+                } else {
+                    return createGenericNotificationCard(notification);
+                }
+            }));
+
+            container.innerHTML = notificationsHTML.join('');
+        }
+
+        // Create enrollment request notification card with loaded info
+        async function createEnrollmentRequestCardWithInfo(notification) {
+            const timeAgo = getTimeAgo(notification.created_at);
+            let studentName = 'Unknown Student';
+            let studentInfoHTML = '<div class="info-row"><span class="info-label">Loading student information...</span></div>';
+            let enrollmentDetailsHTML = '';
+            let studentProfilePicture = null; // Initialize at function start
+
+            try {
+                const supabase = window.supabaseClient;
+
+                // First, try to get the student name from the notification message
+                if (notification.message) {
+                    const messageMatch = notification.message.match(/^(.+?)\s+has submitted/);
+                    if (messageMatch) {
+                        studentName = messageMatch[1];
+                    }
+                }
+
+                // Fetch enrollment request details using the notification data
+                let enrollmentRequest = null;
+                let enrollmentRequestId = null;
+
+                // Get enrollment_request_id from notification.data
+                if (notification.data && notification.data.enrollment_request_id) {
+                    enrollmentRequestId = notification.data.enrollment_request_id;
+                }
+
+                if (enrollmentRequestId) {
+                    const { data: enrollmentData, error: enrollmentError } = await supabase
+                        .from('enrollment_requests')
+                        .select('*')
+                        .eq('id', enrollmentRequestId)
+                        .single();
+
+                    if (!enrollmentError && enrollmentData) {
+                        enrollmentRequest = enrollmentData;
+                    }
+                }
+
+                // If still no enrollment request found, try to find by student info from notification
+                if (!enrollmentRequest && notification.data && notification.data.student_user_id) {
+                    const { data: enrollmentData, error: enrollmentError } = await supabase
+                        .from('enrollment_requests')
+                        .select('*')
+                        .eq('student_user_id', notification.data.student_user_id)
+                        .eq('status', 'pending')
+                        .order('created_at', { ascending: false })
+                        .limit(1)
+                        .single();
+
+                    if (!enrollmentError && enrollmentData) {
+                        enrollmentRequest = enrollmentData;
+                    }
+                }
+
+                // If STILL no enrollment request found, try to find by message content
+                if (!enrollmentRequest && notification.message) {
+                    // Try to extract student name from message and search for recent pending requests
+                    const nameMatch = notification.message.match(/^(.+?)\s+has submitted/);
+                    if (nameMatch) {
+                        const extractedName = nameMatch[1];
+
+                        const { data: enrollmentData, error: enrollmentError } = await supabase
+                            .from('enrollment_requests')
+                            .select('*')
+                            .eq('student_full_name', extractedName)
+                            .eq('status', 'pending')
+                            .order('created_at', { ascending: false })
+                            .limit(1)
+                            .single();
+
+                        if (!enrollmentError && enrollmentData) {
+                            enrollmentRequest = enrollmentData;
+                            console.log('Found enrollment request by name match:', enrollmentData);
+                        }
+                    }
+                }
+
+                if (enrollmentRequest) {
+                    // Use the best available student name
+                    studentName = enrollmentRequest.student_full_name || studentName;
+
+                    // Get student information
+                    let student = null;
+                    let additionalInfo = null;
+                    const studentUserId = enrollmentRequest.student_user_id;
+
+                    if (studentUserId && studentUserId !== 'null') {
+                        try {
+                            const { data: studentData, error: studentError } = await supabase
+                                .from('user_information')
+                                .select('*')
+                                .eq('user_id', studentUserId)
+                                .single();
+
+                            console.log('Loading student info:', { studentUserId, studentData, studentError });
+
+                            if (!studentError && studentData) {
+                                student = studentData;
+
+                                // Update student name from database name if available, otherwise keep the existing name
+                                if (student.full_name) {
+                                    studentName = student.full_name;
+                                }
+
+                                // Get student profile picture from the correct field
+                                if (student.profile_picture) {
+                                    studentProfilePicture = student.profile_picture;
+                                }
+
+                                // Get student additional info
+                                const { data: additionalInfoData } = await supabase
+                                    .from('student_additional_info')
+                                    .select('institution, ssc_batch')
+                                    .eq('user_id', studentUserId)
+                                    .single();
+
+                                additionalInfo = additionalInfoData;
+                            }
+                        } catch (error) {
+                            console.error('Error loading student info:', error);
+                        }
+                    }
+
+                    // Build enrollment details
+                    enrollmentDetailsHTML = `
+                        <div class="info-row">
+                            <span class="info-label">Paid by:</span>
+                            <span class="info-value">${notification.data?.paid_by || enrollmentRequest.student_full_name || 'N/A'}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Payment Type:</span>
+                            <span class="info-value">${notification.data?.payment_type || 'student'}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Transaction ID:</span>
+                            <span class="info-value">${enrollmentRequest.transaction_id || 'N/A'}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">bKash Number:</span>
+                            <span class="info-value">${enrollmentRequest.bkash_number || 'N/A'}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Pay Number:</span>
+                            <span class="info-value">${enrollmentRequest.pay_number || 'N/A'}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Fee:</span>
+                            <span class="info-value">৳${enrollmentRequest.fee || 'N/A'}</span>
+                        </div>
+                        ${enrollmentRequest.screenshot_url ?
+                            `
+                            <div class="info-row">
+                                <span class="info-label">Screenshot:</span>
+                                <span class="info-value">
+                                    <a href="${enrollmentRequest.screenshot_url}" target="_blank" style="color: rgba(255,255,255,0.9); text-decoration: underline;">
+                                        View Payment Screenshot
+                                    </a>
+                                </span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Preview:</span>
+                                <span class="info-value">
+                                    <img src="${enrollmentRequest.screenshot_url}" alt="Payment Screenshot" 
+                                         style="max-width: 200px; max-height: 150px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); cursor: pointer;"
+                                         onclick="window.open('${enrollmentRequest.screenshot_url}', '_blank')">
+                                </span>
+                            </div>
+                        ` : ''}
+                    `;
+
+                    // Build student info
+                    if (student) {
+                        studentInfoHTML = `
+                            <div class="info-row">
+                                <span class="info-label">Email:</span>
+                                <span class="info-value">${student.email || 'N/A'}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Phone:</span>
+                                <span class="info-value">${student.phone || 'N/A'}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Location:</span>
+                                <span class="info-value">${student.district || 'N/A'}, ${student.city || 'N/A'}</span>
+                            </div>
+                            ${additionalInfo ? `
+                                <div class="info-row">
+                                    <span class="info-label">Institution:</span>
+                                    <span class="info-value">${additionalInfo.institution || 'N/A'}</span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label">SSC Batch:</span>
+                                    <span class="info-value">${additionalInfo.ssc_batch || 'N/A'}</span>
+                                </div>
+                            ` : ''}
+                        `;
+                    } else {
+                        // Fallback when no detailed student info is available
+                        studentInfoHTML = `
+                            <div class="info-row">
+                                <span class="info-label">Student Name:</span>
+                                <span class="info-value">${studentName}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">User ID:</span>
+                                <span class="info-value">${enrollmentRequest.student_user_id || 'N/A'}</span>
+                            </div>
+                        `;
+                    }
+                } else {
+                    // If enrollment request is not found, try to extract info from notification.data
+                    if (notification.data && Object.keys(notification.data).length > 0) {
+                        const data = notification.data;
+                        studentName = data.student_full_name || studentName;
+
+                        enrollmentDetailsHTML = `
+                            <div class="info-row">
+                                <span class="info-label">Paid by:</span>
+                                <span class="info-value">${data.paid_by || data.student_full_name || 'N/A'}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Payment Type:</span>
+                                <span class="info-value">${data.payment_type || 'student'}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Transaction ID:</span>
+                                <span class="info-value">${data.transaction_id || 'N/A'}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">bKash Number:</span>
+                                <span class="info-value">${data.bkash_number || 'N/A'}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Pay Number:</span>
+                                <span class="info-value">${data.pay_number || 'N/A'}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Fee:</span>
+                                <span class="info-value">৳${data.fee || 'N/A'}</span>
+                            </div>
+                            ${data.screenshot_url ? `
+                                <div class="info-row">
+                                    <span class="info-label">Screenshot:</span>
+                                    <span class="info-value">
+                                        <a href="${data.screenshot_url}" target="_blank" style="color: rgba(255,255,255,0.9); text-decoration: underline;">
+                                            View Payment Screenshot
+                                        </a>
+                                    </span>
+                                </div>
+                            ` : ''}
+                        `;
+
+                        studentInfoHTML = `
+                            <div class="info-row">
+                                <span class="info-label">Student Name:</span>
+                                <span class="info-value">${studentName}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">User ID:</span>
+                                <span class="info-value">${data.student_user_id || 'N/A'}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Exam:</span>
+                                <span class="info-value">${data.exam_name || 'N/A'}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Week:</span>
+                                <span class="info-value">${data.week_number || 'N/A'}</span>
+                            </div>
+                            ${data.additional_information ? `
+                                <div class="info-row">
+                                    <span class="info-label">Additional Info:</span>
+                                    <span class="info-value">${data.additional_information}</span>
+                                </div>
+                            ` : ''}
+                        `;
+                    } else {
+                        // Last fallback when no data is available
+                        studentInfoHTML = `
+                            <div class="info-row">
+                                <span class="info-label">Student Name:</span>
+                                <span class="info-value">${studentName}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Status:</span>
+                                <span class="info-value">Enrollment details not found</span>
+                            </div>
+                        `;
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading student info:', error);
+                studentInfoHTML = `
+                    <div class="info-row">
+                        <span class="info-label">Student Name:</span>
+                        <span class="info-value">${studentName}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Status:</span>
+                        <span class="info-value">Error loading details</span>
+                    </div>
+                `;
+            }
+
+            return `
+                <div class="notification-card enrollment-request-card" data-id="${notification.id}">
+                    <div class="notification-header">
+                        <div>
+                            <div class="notification-title">iCup Enrollment Request</div>
+                            <div class="notification-time">${timeAgo}</div>
+                        </div>
+                        <button class="remove-btn" onclick="removeNotification('${notification.id}')">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+
+                    <div class="student-info">
+                        <div class="student-avatar">
+                            ${studentProfilePicture ? 
+                                `<img src="${studentProfilePicture}" alt="Student Profile" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">` :
+                                `<i class="fas fa-user-graduate"></i>`
+                            }
+                        </div>
+                        <div class="student-details">
+                            <h3>${studentName}</h3>
+                            <p>${notification.message}</p>
+                        </div>
+                    </div>
+
+                    <div class="student-additional-info">
+                        <h4 style="margin: 0 0 1rem 0; opacity: 0.9;">Payment Details</h4>
+                        ${enrollmentDetailsHTML}
+                        <h4 style="margin: 1.5rem 0 1rem 0; opacity: 0.9;">Student Information</h4>
+                        ${studentInfoHTML}
+                    </div>
+
+                    <div class="notification-actions">
+                        <button class="action-btn reject-btn" onclick="handleEnrollmentRequest('${notification.id}', '${notification.related_user_id || notification.data?.student_user_id || 'unknown'}', false)">
+                            <i class="fas fa-times"></i>
+                            Reject
+                        </button>
+                        <button class="action-btn approve-btn" onclick="handleEnrollmentRequest('${notification.id}', '${notification.related_user_id || notification.data?.student_user_id || 'unknown'}', true)">
+                            <i class="fas fa-check"></i>
+                            Approve
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Create generic notification card
+        function createGenericNotificationCard(notification) {
+            const timeAgo = getTimeAgo(notification.created_at);
+
+            return `
+                <div class="notification-card" data-id="${notification.id}">
+                    <div class="notification-header">
+                        <div>
+                            <div class="notification-title">${notification.title}</div>
+                            <div class="notification-time">${timeAgo}</div>
+                        </div>
+                        <button class="remove-btn default" onclick="removeNotification('${notification.id}')">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <p>${notification.message}</p>
+                    ${notification.data ? `
+                        <div class="notification-details" style="background: var(--bg-primary); padding: 1rem; border-radius: 8px; margin-top: 1rem; border: 1px solid var(--border-color);">
+                            ${notification.data.paid_by ? `<div style="margin-bottom: 0.5rem;"><strong>Paid by:</strong> ${notification.data.paid_by}</div>` : ''}
+                            ${notification.data.payment_type ? `<div style="margin-bottom: 0.5rem;"><strong>Payment Type:</strong> ${notification.data.payment_type}</div>` : ''}
+                            ${notification.data.exam_name ? `<div style="margin-bottom: 0.5rem;"><strong>Exam:</strong> ${notification.data.exam_name}</div>` : ''}
+                            ${notification.data.week_number ? `<div style="margin-bottom: 0.5rem;"><strong>Week:</strong> ${notification.data.week_number}</div>` : ''}
+                            ${notification.data.fee ? `<div style="margin-bottom: 0.5rem;"><strong>Fee:</strong> ৳${notification.data.fee}</div>` : ''}
+                            ${notification.data.transaction_id ? `<div style="margin-bottom: 0.5rem;"><strong>Transaction ID:</strong> ${notification.data.transaction_id}</div>` : ''}
+                            ${notification.data.bkash_number ? `<div style="margin-bottom: 0.5rem;"><strong>bKash Number:</strong> ${notification.data.bkash_number}</div>` : ''}
+                            ${notification.data.screenshot_url ? `<div style="margin-bottom: 0.5rem;"><strong>Screenshot:</strong> <a href="${notification.data.screenshot_url}" target="_blank" style="color: var(--primary-color); text-decoration: underline;">View Receipt</a></div>` : ''}
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+        }
+
+        // Handle enrollment request (approve/reject)
+        async function handleEnrollmentRequest(notificationId, studentId, approve) {
+            try {
+                // IMMEDIATELY disable the buttons to prevent multiple clicks
+                const approveBtn = document.querySelector(`[onclick*="${notificationId}"][onclick*="true"]`);
+                const rejectBtn = document.querySelector(`[onclick*="${notificationId}"][onclick*="false"]`);
+                if (approveBtn) approveBtn.disabled = true;
+                if (rejectBtn) rejectBtn.disabled = true;
+
+                // If student ID is unknown, try to get it from the notification data or enrollment request
+                let actualStudentId = studentId;
+
+                if (!actualStudentId || actualStudentId === 'unknown' || actualStudentId === 'null') {
+                    // Try to get student ID from notification data
+                    const { data: notification } = await window.supabaseClient
+                        .from('notifications')
+                        .select('data, related_user_id')
+                        .eq('id', notificationId)
+                        .single();
+
+                    if (notification?.data?.student_user_id) {
+                        actualStudentId = notification.data.student_user_id;
+                        console.log('Found student ID from notification data:', actualStudentId);
+                    } else if (notification?.related_user_id) {
+                        actualStudentId = notification.related_user_id;
+                        console.log('Found student ID from related_user_id:', actualStudentId);
+                    } else if (notification?.data?.enrollment_request_id) {
+                        // Try to get student ID from enrollment request
+                        const { data: enrollmentRequest } = await window.supabaseClient
+                            .from('enrollment_requests')
+                            .select('student_user_id')
+                            .eq('id', notification.data.enrollment_request_id)
+                            .single();
+
+                        if (enrollmentRequest?.student_user_id) {
+                            actualStudentId = enrollmentRequest.student_user_id;
+                            console.log('Found student ID from enrollment request:', actualStudentId);
+                        }
+                    }
+                }
+
+                // If we still don't have a student ID, we can't process the enrollment
+                if (!actualStudentId || actualStudentId === 'unknown' || actualStudentId === 'null') {
+                    alert('Cannot process this enrollment request - student information is missing. Please contact the student to resubmit their enrollment.');
+
+                    // Just mark notification as hidden
+                    const { error: updateError } = await window.supabaseClient
+                        .from('notifications')
+                        .update({ 
+                            read: true, 
+                            hidden: true,
+                            updated_at: new Date().toISOString()
+                        })
+                        .eq('id', notificationId)
+                        .eq('user_id', currentUser.user.id);
+
+                    if (updateError) {
+                        console.error('Error updating notification:', updateError);
+                    }
+
+                    // Remove from UI
+                    const notificationCard = document.querySelector(`[data-id="${notificationId}"]`);
+                    if (notificationCard) {
+                        notificationCard.style.display = 'none';
+                        notificationCard.remove();
+                    }
+
+                    return;
+                }
+
+                // FIRST: Mark notification as read and hidden
+                const { error: updateError } = await window.supabaseClient
+                    .from('notifications')
+                    .update({ 
+                        read: true, 
+                        hidden: true,
+                        updated_at: new Date().toISOString()
+                    })
+                    .eq('id', notificationId)
+                    .eq('user_id', currentUser.user.id);
+
+                if (updateError) {
+                    console.error('Error updating notification:', updateError);
+                }
+
+                // THEN: Process the approve/reject logic
+                if (approve) {
+                    // Get the actual exam_id and week_number from notification data
+                    const { data: notificationData } = await window.supabaseClient
+                        .from('notifications')
+                        .select('data')
+                        .eq('id', notificationId)
+                        .single();
+
+                    const examId = notificationData?.data?.exam_id;
+                    const weekNumber = notificationData?.data?.week_number || 1;
+
+                    // Add student to student_enrollment table using user_id (which is the correct column name)
+                    const { error: enrollmentError } = await window.supabaseClient
+                        .from('student_enrollment')
+                        .insert({
+                            user_id: actualStudentId,
+                            exam_id: examId,
+                            week_number: weekNumber,
+                            enrollment_status: 'active',
+                            payment_status: 'paid',
+                            enrolled_at: new Date().toISOString(),
+                            enrolled: true
+                        });
+
+                    if (enrollmentError && enrollmentError.code !== '23505') { // Ignore duplicate key error
+                        console.error('Error enrolling student:', enrollmentError);
+                        throw enrollmentError;
+                    }
+
+                    // Send approval notification to student
+                    await sendNotificationToStudent(actualStudentId, true);
+                } else {
+                    // Send rejection notification to student
+                    await sendNotificationToStudent(actualStudentId, false);
+                }
+
+                // Remove from UI immediately
+                const notificationCard = document.querySelector(`[data-id="${notificationId}"]`);
+                if (notificationCard) {
+                    notificationCard.style.display = 'none';
+                    notificationCard.remove();
+                }
+
+                // Update notification count (only count non-hidden notifications)
+                const { data: visibleNotifications } = await window.supabaseClient
+                    .from('notifications')
+                    .select('id')
+                    .eq('user_id', currentUser.user.id)
+                    .eq('hidden', false);
+
+                const actualCount = visibleNotifications ? visibleNotifications.length : 0;
+                localStorage.setItem('notificationCount', actualCount.toString());
+
+                // Check if no notifications left
+                const remainingCards = document.querySelectorAll('.notification-card');
+                if (remainingCards.length === 0) {
+                    document.getElementById('notificationsContent').innerHTML = `
+                        <div class="no-notifications">
+                            <i class="fas fa-bell-slash"></i>
+                            <h3>No notifications</h3>
+                            <p>You're all caught up!</p>
+                        </div>
+                    `;
+                }
+
+                // Show success message
+                if (approve) {
+                    alert('Student enrollment approved successfully!');
+                } else {
+                    alert('Student enrollment rejected.');
+                }
+
+                // Dispatch event to update dashboard
+                window.dispatchEvent(new CustomEvent('notificationProcessed', { 
+                    detail: { newCount: actualCount, notificationId } 
+                }));
+
+            } catch (error) {
+                console.error('Error handling enrollment request:', error);
+                alert('Failed to process enrollment request. Please try again.');
+            }
+        }
+
+        // Send notification to student about approval/rejection
+        async function sendNotificationToStudent(studentId, approved) {
+            try {
+                const adminName = currentUser.profile.full_name || currentUser.profile.fullName || 'Admin';
+                const message = approved 
+                    ? `Congratulations! Your iCup enrollment has been approved by ${adminName}. You can now participate in iCup exams.`
+                    : `Unfortunately, your iCup enrollment request has been rejected by ${adminName}. Please contact support for more information.`;
+
+                const { error } = await window.supabaseClient
+                    .from('notifications')
+                    .insert({
+                        user_id: studentId,
+                        title: approved ? 'Enrollment Approved' : 'Enrollment Rejected',
+                        message: message,
+                        type: 'enrollment_response',
+                        related_user_id: currentUser.user.id,
+                        created_at: new Date().toISOString()
+                    });
+
+                if (error) throw error;
+
+            } catch (error) {
+                console.error('Error sending notification to student:', error);
+            }
+        }
+
+        // Remove notification
+        async function removeNotification(notificationId) {
+            try {
+                // Mark notification as hidden instead of deleting
+                const { error } = await window.supabaseClient
+                    .from('notifications')
+                    .update({ 
+                        hidden: true,
+                        read: true,
+                        updated_at: new Date().toISOString()
+                    })
+                    .eq('id', notificationId)
+                    .eq('user_id', currentUser.user.id);
+
+                if (error) throw error;
+
+                // Remove from UI immediately
+                const notificationCard = document.querySelector(`[data-id="${notificationId}"]`);
+                if (notificationCard) {
+                    notificationCard.style.animation = 'slideOut 0.3s ease-out';
+                    setTimeout(() => {
+                        notificationCard.remove();
+
+                        // Check if no notifications left
+                        const remainingCards = document.querySelectorAll('.notification-card');
+                        if (remainingCards.length === 0) {
+                            document.getElementById('notificationsContent').innerHTML = `
+                                <div class="no-notifications">
+                                    <i class="fas fa-bell-slash"></i>
+                                    <h3>No notifications</h3>
+                                    <p>You're all caught up!</p>
+                                </div>
+                            `;
+                        }
+                    }, 300);
+                }
+
+                // Get current notification count from visible notifications only
+                const { data: visibleNotifications, error: countError } = await window.supabaseClient
+                    .from('notifications')
+                    .select('id')
+                    .eq('user_id', currentUser.user.id)
+                    .eq('hidden', false);
+
+                const actualCount = visibleNotifications ? visibleNotifications.length : 0;
+
+                // Update notification count in localStorage with actual count
+                localStorage.setItem('notificationCount', actualCount.toString());
+
+                // Dispatch custom event for admin dashboard to listen
+                window.dispatchEvent(new CustomEvent('notificationRemoved', { 
+                    detail: { newCount: actualCount, notificationId } 
+                }));
+
+                // Also trigger storage event for cross-tabsync
+                window.dispatchEvent(new StorageEvent('storage', {
+                    key: 'notificationCount',
+                    newValue: actualCount.toString(),
+                    oldValue: localStorage.getItem('notificationCount') || '0'
+                }));
+
+            } catch (error) {
+                console.error('Error removing notification:', error);
+                alert('Failed to remove notification. Please try again.');
+            }
+        }
+
+        // Show error message
+        function showError(message) {
+            document.getElementById('notificationsContent').innerHTML = `
+                <div class="no-notifications">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <h3>Error</h3>
+                    <p>${message}</p>
+                </div>
+            `;
+        }
+
+        // Get time ago string
+        function getTimeAgo(dateString) {
+            const date = new Date(dateString);
+            const now = new Date();
+            const diffInSeconds = Math.floor((now - date) / 1000);
+
+            if (diffInSeconds < 60) {
+                return 'Just now';
+            } else if (diffInSeconds < 3600) {
+                const minutes = Math.floor(diffInSeconds / 60);
+                return `${minutes} minute${minutes > 1 ? 's' : ''} ago`;
+            } else if (diffInSeconds < 86400) {
+                const hours = Math.floor(diffInSeconds / 3600);
+                return `${hours} hour${hours > 1 ? 's' : ''} ago`;
+            } else {
+                const days = Math.floor(diffInSeconds / 86400);
+                return `${days} day${days > 1 ? 's' : ''} ago`;
+            }
+        }
+
+        // Initialize page when DOM is loaded
+        document.addEventListener('DOMContentLoaded', initializePage);
+    </script>
+</body>
+</html>
