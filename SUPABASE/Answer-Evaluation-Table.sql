@@ -1,5 +1,7 @@
 -- Create answer_evaluation table for storing evaluation data
-CREATE TABLE IF NOT EXISTS answer_evaluation (
+DROP TABLE IF EXISTS answer_evaluation CASCADE;
+
+CREATE TABLE answer_evaluation (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     answer_set_id UUID NOT NULL REFERENCES answer_sets(id) ON DELETE CASCADE,
     evaluator_id UUID NOT NULL REFERENCES user_information(user_id) ON DELETE CASCADE,
@@ -33,6 +35,11 @@ CREATE INDEX IF NOT EXISTS idx_answer_evaluation_subject ON answer_evaluation(su
 
 -- Enable RLS
 ALTER TABLE answer_evaluation ENABLE ROW LEVEL SECURITY;
+
+-- Drop existing policies if they exist
+DROP POLICY IF EXISTS "evaluators_can_manage_own_evaluations" ON answer_evaluation;
+DROP POLICY IF EXISTS "admins_full_access_evaluations" ON answer_evaluation;
+DROP POLICY IF EXISTS "students_can_view_own_evaluations" ON answer_evaluation;
 
 -- RLS Policy 1: Allow evaluators to manage their own evaluations
 CREATE POLICY "evaluators_can_manage_own_evaluations" ON answer_evaluation
@@ -76,19 +83,22 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+DROP TRIGGER IF EXISTS update_answer_evaluation_updated_at ON answer_evaluation;
 CREATE TRIGGER update_answer_evaluation_updated_at
     BEFORE UPDATE ON answer_evaluation
     FOR EACH ROW
     EXECUTE FUNCTION update_answer_evaluation_updated_at();
 
 -- Create leaderboard view for current week
+DROP VIEW IF EXISTS current_week_leaderboard CASCADE;
+
 CREATE OR REPLACE VIEW current_week_leaderboard AS
 WITH student_totals AS (
     SELECT 
         ae.student_id,
         ae.exam_id,
         ui.full_name,
-        ui.class_level,
+        COALESCE(ui.class_level, 'Unknown') as class_level,
         SUM(ae.total_marks) as total_score,
         COUNT(DISTINCT ae.subject) as subjects_evaluated,
         ARRAY_AGG(
@@ -120,6 +130,34 @@ ORDER BY total_score DESC;
 -- Grant necessary permissions
 GRANT SELECT ON current_week_leaderboard TO authenticated;
 GRANT ALL ON answer_evaluation TO authenticated;
+
+-- Insert some sample data for testing (optional - remove in production)
+-- This helps verify the leaderboard works
+INSERT INTO answer_evaluation (
+    answer_set_id, 
+    evaluator_id, 
+    exam_id, 
+    student_id, 
+    subject, 
+    total_marks, 
+    status,
+    detailed_marks
+) 
+SELECT 
+    ans.id,
+    (SELECT user_id FROM user_information WHERE role = 'tutor' LIMIT 1),
+    ans.exam_id,
+    ans.student_id,
+    'physics',
+    FLOOR(RANDOM() * 50 + 50)::DECIMAL(5,2), -- Random marks between 50-100
+    'completed',
+    'Sample evaluation for testing'
+FROM answer_sets ans
+WHERE EXISTS (SELECT 1 FROM user_information WHERE role = 'tutor')
+AND ans.physics_images IS NOT NULL 
+AND ARRAY_LENGTH(ans.physics_images, 1) > 0
+LIMIT 5
+ON CONFLICT (answer_set_id, subject, evaluator_id) DO NOTHING;
 
 COMMENT ON TABLE answer_evaluation IS 'Stores evaluation data including annotations, marks, and feedback for student answer sets';
 COMMENT ON COLUMN answer_evaluation.evaluated_pictures IS 'JSON object containing SVG annotations and overlay data for each image';

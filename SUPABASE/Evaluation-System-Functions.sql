@@ -17,7 +17,7 @@ BEGIN
     WITH assignment_stats AS (
         SELECT 
             ea.subject,
-            ARRAY_LENGTH(ea.assigned_answer_sets, 1) as total_assigned
+            COALESCE(ARRAY_LENGTH(ea.assigned_answer_sets, 1), 0) as total_assigned
         FROM evaluator_allocation ea
         WHERE ea.evaluator_id = evaluator_uuid
         AND ea.exam_id = exam_uuid
@@ -33,7 +33,7 @@ BEGIN
         GROUP BY ae.subject
     )
     SELECT 
-        ast.subject,
+        COALESCE(ast.subject, es.subject) as subject,
         COALESCE(ast.total_assigned, 0) as total_assigned,
         COALESCE(es.completed, 0) as completed_evaluations,
         COALESCE(es.in_progress, 0) as in_progress_evaluations,
@@ -43,7 +43,7 @@ BEGIN
             ELSE ROUND((COALESCE(es.completed, 0)::DECIMAL / ast.total_assigned) * 100, 2)
         END as completion_percentage
     FROM assignment_stats ast
-    LEFT JOIN evaluation_stats es ON ast.subject = es.subject;
+    FULL OUTER JOIN evaluation_stats es ON ast.subject = es.subject;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
@@ -67,10 +67,13 @@ BEGIN
         WHERE enabled = true
     LOOP
         -- Get all answer sets for this subject and exam
-        SELECT ARRAY_AGG(ans.id) INTO available_sets
-        FROM answer_sets ans
-        WHERE ans.exam_id = exam_uuid
-        AND ARRAY_LENGTH(ans[subject_record.subject || '_images'], 1) > 0;
+        EXECUTE format('
+            SELECT ARRAY_AGG(ans.id) 
+            FROM answer_sets ans
+            WHERE ans.exam_id = $1
+            AND COALESCE(ARRAY_LENGTH(ans.%I_images, 1), 0) > 0', 
+            subject_record.subject
+        ) INTO available_sets USING exam_uuid;
 
         -- Skip if no answer sets available
         IF available_sets IS NULL OR ARRAY_LENGTH(available_sets, 1) = 0 THEN
@@ -78,12 +81,14 @@ BEGIN
         END IF;
 
         -- Get eligible evaluators for this subject
-        sets_per_evaluator := ARRAY_LENGTH(available_sets, 1) / (
-            SELECT COUNT(*)
-            FROM evaluator_eligibility ee
-            WHERE ee.enabled = true
-            AND subject_record.subject = ANY(ee.preferred_subjects)
-        );
+        SELECT COUNT(*) INTO sets_per_evaluator
+        FROM evaluator_eligibility ee
+        WHERE ee.enabled = true
+        AND subject_record.subject = ANY(ee.preferred_subjects);
+
+        IF sets_per_evaluator > 0 THEN
+            sets_per_evaluator := ARRAY_LENGTH(available_sets, 1) / sets_per_evaluator;
+        END IF;
 
         -- Ensure at least 1 set per evaluator
         IF sets_per_evaluator < 1 THEN
@@ -181,11 +186,11 @@ BEGIN
     SELECT 
         ae.subject,
         ae.total_marks,
-        ui.full_name as evaluator_name,
+        COALESCE(ui.full_name, 'Unknown Evaluator') as evaluator_name,
         ae.status as evaluation_status,
         ae.submitted_at as evaluated_at
     FROM answer_evaluation ae
-    JOIN user_information ui ON ae.evaluator_id = ui.user_id
+    LEFT JOIN user_information ui ON ae.evaluator_id = ui.user_id
     WHERE ae.student_id = student_uuid
     AND ae.exam_id = exam_uuid
     ORDER BY ae.subject;
@@ -208,16 +213,10 @@ BEGIN
     FROM answer_sets
     WHERE exam_id = exam_uuid;
 
-    -- Get total evaluations needed (students × subjects)
+    -- Get total evaluations needed
     SELECT COUNT(*) INTO total_evaluations_needed
-    FROM answer_sets ans
-    CROSS JOIN (
-        SELECT DISTINCT unnest(preferred_subjects) as subject
-        FROM evaluator_eligibility 
-        WHERE enabled = true
-    ) subjects
-    WHERE ans.exam_id = exam_uuid
-    AND ARRAY_LENGTH(ans[subjects.subject || '_images'], 1) > 0;
+    FROM answer_evaluation ae
+    WHERE ae.exam_id = exam_uuid;
 
     -- Get completed evaluations
     SELECT COUNT(*) INTO completed_evaluations
@@ -246,10 +245,10 @@ BEGIN
             ae.subject,
             COUNT(*) as total_evaluations,
             COUNT(*) FILTER (WHERE ae.status = 'completed') as completed_evaluations,
-            ROUND(
-                (COUNT(*) FILTER (WHERE ae.status = 'completed')::DECIMAL / COUNT(*)) * 100, 
-                2
-            ) as completion_percentage,
+            CASE 
+                WHEN COUNT(*) = 0 THEN 0
+                ELSE ROUND((COUNT(*) FILTER (WHERE ae.status = 'completed')::DECIMAL / COUNT(*)) * 100, 2)
+            END as completion_percentage,
             ROUND(AVG(ae.total_marks) FILTER (WHERE ae.status = 'completed'), 2) as average_score
         FROM answer_evaluation ae
         WHERE ae.exam_id = exam_uuid
@@ -258,16 +257,16 @@ BEGIN
 
     result := json_build_object(
         'exam_id', exam_uuid,
-        'total_students', total_students,
-        'total_evaluations_needed', total_evaluations_needed,
-        'completed_evaluations', completed_evaluations,
+        'total_students', COALESCE(total_students, 0),
+        'total_evaluations_needed', COALESCE(total_evaluations_needed, 0),
+        'completed_evaluations', COALESCE(completed_evaluations, 0),
         'completion_percentage', 
             CASE 
-                WHEN total_evaluations_needed = 0 THEN 0
-                ELSE ROUND((completed_evaluations::DECIMAL / total_evaluations_needed) * 100, 2)
+                WHEN COALESCE(total_evaluations_needed, 0) = 0 THEN 0
+                ELSE ROUND((COALESCE(completed_evaluations, 0)::DECIMAL / total_evaluations_needed) * 100, 2)
             END,
-        'average_score', avg_score,
-        'subject_statistics', subject_stats
+        'average_score', COALESCE(avg_score, 0),
+        'subject_statistics', COALESCE(subject_stats, '[]'::JSON)
     );
 
     RETURN result;
@@ -287,30 +286,27 @@ RETURNS TABLE (
 ) AS $$
 BEGIN
     RETURN QUERY
-    SELECT 
-        'AS-' || SUBSTRING(ans.id::TEXT, 1, 8) as anonymous_id,
-        ans.id as answer_set_id,
-        subject_name as subject,
-        CASE subject_name
-            WHEN 'physics' THEN ans.physics_images
-            WHEN 'chemistry' THEN ans.chemistry_images
-            WHEN 'math' THEN ans.math_images
-            WHEN 'biology' THEN ans.biology_images
-            ELSE '{}'::TEXT[]
-        END as images,
-        ans.upload_status,
-        ans.uploaded_at,
-        COALESCE(ae.status, 'pending') as evaluation_status
-    FROM answer_sets ans
-    JOIN evaluator_allocation ea ON ans.id = ANY(ea.assigned_answer_sets)
-    LEFT JOIN answer_evaluation ae ON ans.id = ae.answer_set_id 
-        AND ae.subject = subject_name 
-        AND ae.evaluator_id = evaluator_uuid
-    WHERE ea.evaluator_id = evaluator_uuid
-    AND ea.exam_id = exam_uuid
-    AND ea.subject = subject_name
-    AND ans.exam_id = exam_uuid
-    ORDER BY ans.uploaded_at;
+    EXECUTE format('
+        SELECT 
+            ''AS-'' || SUBSTRING(ans.id::TEXT, 1, 8) as anonymous_id,
+            ans.id as answer_set_id,
+            $3 as subject,
+            COALESCE(ans.%I_images, ''{}'') as images,
+            ans.upload_status,
+            ans.uploaded_at,
+            COALESCE(ae.status, ''pending'') as evaluation_status
+        FROM answer_sets ans
+        JOIN evaluator_allocation ea ON ans.id = ANY(ea.assigned_answer_sets)
+        LEFT JOIN answer_evaluation ae ON ans.id = ae.answer_set_id 
+            AND ae.subject = $3
+            AND ae.evaluator_id = $1
+        WHERE ea.evaluator_id = $1
+        AND ea.exam_id = $2
+        AND ea.subject = $3
+        AND ans.exam_id = $2
+        ORDER BY ans.uploaded_at',
+        subject_name
+    ) USING evaluator_uuid, exam_uuid, subject_name;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
@@ -321,7 +317,8 @@ GRANT EXECUTE ON FUNCTION get_student_evaluation_summary(UUID, UUID) TO authenti
 GRANT EXECUTE ON FUNCTION get_exam_evaluation_statistics(UUID) TO authenticated;
 GRANT EXECUTE ON FUNCTION get_anonymous_answer_sets(UUID, UUID, VARCHAR(50)) TO authenticated;
 
--- Create additional RLS policy for evaluator allocation access
+-- Drop and recreate the evaluator allocation policy
+DROP POLICY IF EXISTS "evaluators_can_view_own_allocations" ON evaluator_allocation;
 CREATE POLICY "evaluators_can_view_own_allocations" ON evaluator_allocation
     FOR SELECT 
     TO authenticated

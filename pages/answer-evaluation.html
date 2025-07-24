@@ -659,8 +659,17 @@
                     .eq('subject', selectedSubject)
                     .single();
 
-                if (allocationError || !allocation || !allocation.assigned_answer_sets) {
-                    showError('No answer sets assigned to you for this subject.');
+                if (allocationError && allocationError.code !== 'PGRST116') {
+                    console.error('Allocation error:', allocationError);
+                    showError('Error checking answer set assignments: ' + allocationError.message);
+                    return;
+                }
+
+                if (!allocation || !allocation.assigned_answer_sets || allocation.assigned_answer_sets.length === 0) {
+                    // Show empty state instead of error
+                    document.getElementById('answerSetSelector').style.display = 'none';
+                    document.getElementById('subjectSelector').style.display = 'block';
+                    alert('No answer sets have been assigned to you for ' + selectedSubject + ' yet. Please contact your administrator.');
                     return;
                 }
 
@@ -670,14 +679,25 @@
                     .select('*')
                     .in('id', allocation.assigned_answer_sets);
 
-                if (setsError) throw setsError;
+                if (setsError) {
+                    console.error('Sets error:', setsError);
+                    throw setsError;
+                }
 
                 answerSets = sets || [];
+                
+                if (answerSets.length === 0) {
+                    alert('No valid answer sets found. The assigned answer sets may have been removed.');
+                    document.getElementById('answerSetSelector').style.display = 'none';
+                    document.getElementById('subjectSelector').style.display = 'block';
+                    return;
+                }
+
                 await displayAnswerSets();
 
             } catch (error) {
                 console.error('Error loading answer sets:', error);
-                showError('Failed to load assigned answer sets.');
+                showError('Failed to load assigned answer sets: ' + error.message);
             }
         }
 
