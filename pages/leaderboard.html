@@ -436,13 +436,27 @@
                 document.getElementById('leaderboardContent').style.display = 'none';
                 document.getElementById('emptyState').style.display = 'none';
 
+                // First, test if the view exists and is accessible
+                console.log('Testing leaderboard view access...');
+                
                 // Get leaderboard data from the view
                 const { data, error } = await window.supabaseClient
                     .from('current_week_leaderboard')
                     .select('*');
 
-                if (error) throw error;
+                if (error) {
+                    console.error('Leaderboard query error:', error);
+                    
+                    // Check if it's a view not found error
+                    if (error.code === '42P01' || error.message.includes('does not exist')) {
+                        showError('Leaderboard system is not properly configured. Please contact your administrator.');
+                        return;
+                    }
+                    
+                    throw error;
+                }
 
+                console.log('Leaderboard data received:', data);
                 leaderboardData = data || [];
                 
                 if (leaderboardData.length === 0) {
@@ -452,7 +466,7 @@
                 }
 
                 // Extract available classes
-                availableClasses = [...new Set(leaderboardData.map(item => item.class_level))].sort();
+                availableClasses = [...new Set(leaderboardData.map(item => item.class_level).filter(Boolean))].sort();
                 
                 // Update class filter
                 updateClassFilter();
@@ -468,7 +482,7 @@
 
             } catch (error) {
                 console.error('Error loading leaderboard data:', error);
-                showError('Failed to load leaderboard data.');
+                showError('Failed to load leaderboard data: ' + (error.message || 'Unknown error'));
             }
         }
 
